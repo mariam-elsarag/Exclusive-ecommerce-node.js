@@ -60,40 +60,42 @@ const Navbar = () => {
             </li>
           )}
         </ul>
-        <ul className="relative flex items-center gap-5 ">
-          <li>
-            <Link to="wisthlist">
-              <CiHeart size={25} />
-            </Link>
-          </li>
-          <li>
-            <Link to="/cart">
-              <div className="relative">
-                <BsCart3 size={25} />
-                {token?.length > 0 && cart?.length > 0 && (
-                  <span className="h-1 absolute left-[-13px] top-[-5px] flex w-4 items-center  justify-center rounded-full bg-red-500 text-xs font-normal text-white">
-                    {cart?.length}
-                  </span>
-                )}
-              </div>
-            </Link>
-          </li>
-          <li className="inline-flex cursor-pointer md:hidden">
-            <HiBars3 size={25} onClick={() => setOpenMenu((menu) => !menu)} />
-          </li>
-
-          {token?.length > 0 && (
+        {token?.length > 0 && token !== undefined && (
+          <ul className="relative flex items-center gap-5 ">
             <li>
-              <img
-                src={profile_picture}
-                onClick={() => setOpenSubMenu((subMenu) => !subMenu)}
-                alt="user icon"
-                className="cursor-pointer"
-              />
-              {openSubMenu && <SubMenu setOpenSubMenu={setOpenSubMenu} />}
+              <Link to="wisthlist">
+                <CiHeart size={25} />
+              </Link>
             </li>
-          )}
-        </ul>
+            <li>
+              <Link to="/cart">
+                <div className="relative">
+                  <BsCart3 size={25} />
+                  {token?.length > 0 && cart?.length > 0 && (
+                    <span className="h-1 absolute left-[-13px] top-[-5px] flex w-4 items-center  justify-center rounded-full bg-red-500 text-xs font-normal text-white">
+                      {cart?.length}
+                    </span>
+                  )}
+                </div>
+              </Link>
+            </li>
+            <li className="inline-flex cursor-pointer md:hidden">
+              <HiBars3 size={25} onClick={() => setOpenMenu((menu) => !menu)} />
+            </li>
+
+            {token?.length > 0 && (
+              <li>
+                <img
+                  src={UserIcon}
+                  onClick={() => setOpenSubMenu((subMenu) => !subMenu)}
+                  alt="user icon"
+                  className="cursor-pointer"
+                />
+                {openSubMenu && <SubMenu setOpenSubMenu={setOpenSubMenu} />}
+              </li>
+            )}
+          </ul>
+        )}
       </div>
     </nav>
   );

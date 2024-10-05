@@ -20,22 +20,20 @@ const SignIn = () => {
   } = useForm();
   const onSubmit = async (data) => {
     try {
-      const { email, password } = data;
-      await axiosInstance.post("/api/auth/register");
-      toast.success("Login successful!");
-      navigate("/home");
+      const response = await axiosInstance.post("/api/auth/login", data);
+      if (response.status === 200) {
+        dispatch(
+          signIn({
+            user: response.data.user.full_name,
+            token: response.data.token,
+          }),
+        );
+        toast.success("Login successful!");
+        navigate("/home");
+      }
     } catch (error) {
-      console.log("Error caught:", error.code);
-      toast.error("Password or email is invalid", {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.error(error.response.data.errors);
+      console.log("Error caught:", error);
     }
   };
 
@@ -52,15 +50,11 @@ const SignIn = () => {
         >
           <div className="mb-4">
             <input
-              type="email"
-              placeholder="Email"
+              type="text"
+              placeholder="Email or phone number"
               className="input"
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                  message: "Invalid email address",
-                },
+              {...register("query", {
+                required: "This field is required",
               })}
             />
             {errors.email && <ErrorMessage message={errors.email.message} />}
@@ -72,10 +66,6 @@ const SignIn = () => {
               placeholder="Password"
               {...register("password", {
                 required: "this is required",
-                minLength: {
-                  value: 8,
-                  message: "Password must be at least 8 characters",
-                },
               })}
             />
             {errors.password && (

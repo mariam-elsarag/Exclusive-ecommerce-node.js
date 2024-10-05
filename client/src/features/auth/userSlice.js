@@ -4,7 +4,6 @@ import Cookies from "js-cookie";
 export const initialState = {
   user: Cookies.get("full_name"),
   token: Cookies.get("token"),
-  profile_picture: Cookies.get("profile_picture"),
 
   isLoading: true,
 };
@@ -16,10 +15,10 @@ const userSlice = createSlice({
     signIn(state, action) {
       state.user = action.payload.full_name;
       state.token = action.payload.token;
-      state.profile_picture = action.payload.profile_picture;
     },
     logOut(state) {
-      state.user = null;
+      state.user = undefined;
+      state.token = undefined;
     },
   },
 });

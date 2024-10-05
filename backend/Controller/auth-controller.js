@@ -7,6 +7,8 @@ const AppErrors = require("../Utils/AppError");
 const CatchAsync = require("../Utils/CatchAsync");
 const FilterBody = require("../Utils/FilterBody");
 
+// controller
+const Factory = require("./handle-factory");
 // for generation token
 const generateToken = (user) => {
   console.log(user, "roma");
@@ -79,19 +81,14 @@ exports.restrectTo = (...roles) => {
 };
 // Controllers
 // register
-exports.register = CatchAsync(async (req, res, next) => {
-  const requiredData = [
-    "first_name",
-    "last_name",
-    "email",
-    "phone_number",
-    "password",
-  ];
-  const filterdata = FilterBody(req.body, requiredData);
 
-  const user = await User.create(filterdata);
-  res.status(201).json({ user });
-});
+exports.register = Factory.createOne(User, [
+  "first_name",
+  "last_name",
+  "email",
+  "phone_number",
+  "password",
+]);
 
 // login
 exports.login = CatchAsync(async (req, res, next) => {

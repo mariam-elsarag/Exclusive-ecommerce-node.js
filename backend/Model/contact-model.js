@@ -5,17 +5,16 @@ const contactSchema = new mongoose.Schema({
   user: {
     type: String,
     required: [true, "user name is required"],
+    maxLength: [50, "Max length for first name is 50 character"],
   },
   email: {
     type: String,
-    unique: true,
     lowercase: true,
     validate: [validator.isEmail, "Please provide a valid email"],
     required: [true, "Email is required"],
   },
   phone_number: {
     type: String,
-    unique: true,
     validate: {
       validator: (value) => validator.isMobilePhone(value, "ar-EG"),
       message: "Please provide a valid phone number",

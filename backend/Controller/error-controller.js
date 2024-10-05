@@ -23,6 +23,16 @@ const handleValidatorError = (err) => {
   }
   return new AppErrors(errors, 400);
 };
+// Db errors
+// duplicate
+const handleDublicateDbData = (err) => {
+  if (err.keyPattern.email) {
+    return new AppErrors({ email: `Email already exist` }, 400);
+  }
+  if (err.keyPattern.phone_number) {
+    return new AppErrors({ phone_number: `phone number already exist` }, 400);
+  }
+};
 const sendErrorForDev = (err, res) => {
   res.status(err.statusCode).json({
     message: err.message,
@@ -31,7 +41,6 @@ const sendErrorForDev = (err, res) => {
   });
 };
 const sendErrorForProduction = (err, res) => {
-  console.log(err.isOperational, "is oper");
   if (err.isOperational) {
     res.status(err.statusCode).json({ errors: err.message });
   } else {
@@ -46,6 +55,10 @@ module.exports = (err, req, res, next) => {
     console.log(error.name, "name");
     if (error.name === "ValidationError") {
       error = handleValidatorError(error);
+    }
+    console.log(err.code, "code");
+    if (error.code === 11000) {
+      error = handleDublicateDbData(error);
     }
     if (
       error.name === "jsonWebTokenError" ||

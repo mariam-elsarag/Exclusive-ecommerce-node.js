@@ -31,6 +31,9 @@ const userScema = new mongoose.Schema(
         message: "Please provide a valid phone number",
       },
     },
+    profile_picture: {
+      type: String,
+    },
     role: {
       type: String,
       enum: ["user", "admin"],
@@ -52,7 +55,9 @@ const userScema = new mongoose.Schema(
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
-
+userScema.virtual("full_name").get(function () {
+  return `${this.first_name} ${this.last_name}`;
+});
 // for encrypt password
 userScema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();

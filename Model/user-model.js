@@ -31,6 +31,11 @@ const userScema = new mongoose.Schema(
         message: "Please provide a valid phone number",
       },
     },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
     address: {
       type: String,
     },
@@ -72,6 +77,17 @@ userScema.set("toJSON", {
     return ret;
   },
 });
+// check if user change password after jwt issue
+userScema.methods.checkChangePasswordAfterJWT = function (jwtTimeStemp) {
+  if (this.passwordChangedAt) {
+    const passwordChangeInMillis = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+    return jwtTimeStemp < passwordChangeInMillis;
+  }
+  return false;
+};
 
 const User = mongoose.model("User", userScema, "User");
 module.exports = User;

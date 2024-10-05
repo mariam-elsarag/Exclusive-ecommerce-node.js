@@ -31,9 +31,7 @@ const userScema = new mongoose.Schema(
         message: "Please provide a valid phone number",
       },
     },
-    profile_picture: {
-      type: String,
-    },
+
     role: {
       type: String,
       enum: ["user", "admin"],
@@ -74,9 +72,11 @@ userScema.methods.comparePassword = async function (
 
 // replace _id to userid for readablity
 userScema.set("toJSON", {
+  virtuals: true,
   transform: (doc, ret) => {
     ret.userId = ret._id;
     delete ret._id;
+    delete ret.id;
     delete ret.password;
     delete ret.__v;
     return ret;

@@ -9,13 +9,24 @@ const FilterBody = require("../Utils/FilterBody");
 
 // for generation token
 const generateToken = (user) => {
-  return jwt.sign(
+  console.log(user, "roma");
+  return jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE_IN,
+  });
+};
+const createRefreshToken = (user, res) => {
+  const refreshToken = jwt.sign(
     { id: user.userId, role: user.role },
     process.env.JWT_SECRET,
     {
-      expiresIn: process.env.JWT_EXPIRE_IN,
+      expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRE_IN,
     }
   );
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    sameSite: "strict",
+    path: "/api/auth/refresh-token",
+  });
 };
 // to check if have authorization
 const extractAuthorization = (req) => {
@@ -32,13 +43,12 @@ const extractAuthorization = (req) => {
 const verifyToken = async (token) => {
   return await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 };
-
 // Protect route
 exports.protect = CatchAsync(async (req, res, next) => {
   const token = extractAuthorization(req);
   if (!token) return next(new AppErrors("Unauthorized: Access is denied", 401));
   // check if this token is valid
-  const decoded = verifyToken(token);
+  const decoded = await verifyToken(token);
   if (!decoded)
     return next(new AppErrors("Unauthorized: Access is denied", 401));
 
@@ -68,8 +78,8 @@ exports.restrectTo = (...roles) => {
   };
 };
 // Controllers
+// register
 exports.register = CatchAsync(async (req, res, next) => {
-  let errors = [];
   const requiredData = [
     "first_name",
     "last_name",
@@ -79,14 +89,48 @@ exports.register = CatchAsync(async (req, res, next) => {
   ];
   const filterdata = FilterBody(req.body, requiredData);
 
-  requiredData.forEach((el) => {
-    if (!filterdata[el]) {
-      errors.push({ [el]: `${el} is required` });
-    }
-  });
-  if (errors.length > 0) {
-    return next(new AppErrors(errors, 400));
-  }
   const user = await User.create(filterdata);
   res.status(201).json({ user });
+});
+
+// login
+exports.login = CatchAsync(async (req, res, next) => {
+  const requiredData = ["query", "password"];
+  const filterdata = FilterBody(req.body, requiredData);
+
+  const user = await User.findOne({
+    $or: [{ email: filterdata.query }, { phone_number: filterdata.query }],
+  });
+
+  if (
+    !user ||
+    !(await user.comparePassword(filterdata.password, user.password))
+  ) {
+    return next(new AppErrors("Wrong credentials", 401));
+  }
+  // generat tokens
+  const accessToken = generateToken(user);
+  createRefreshToken(user, res);
+
+  res.status(200).json({ token: accessToken, user });
+});
+
+// refresh token
+exports.refreshToken = CatchAsync(async (req, res, next) => {
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) return next(new AppErrors("No refresh token", 403));
+  const decoded = await verifyToken(refreshToken);
+  if (!decoded)
+    return next(new AppErrors("Unauthorized: Access is denied", 401));
+  //  find user
+  const user = await User.findById(decoded.id);
+
+  if (!user) return next(new AppErrors("User no longer exists", 404));
+  if (user.checkChangePasswordAfterJWT(decoded.iat)) {
+    return next(new AppErrors("User recently changed password", 404));
+  }
+  const newAccessToken = generateToken(user);
+  createRefreshToken(user, res);
+  res.status(200).json({ token: newAccessToken });
 });

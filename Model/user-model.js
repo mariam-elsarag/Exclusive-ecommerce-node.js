@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+// for encrypt password
+const bcrypt = require("node:bcrypt");
+const jwt = require("jsonwebtoken");
 
 const userScema = new mongoose.Schema(
   {
@@ -44,6 +47,31 @@ const userScema = new mongoose.Schema(
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
+// for encrypt password
+userScema.pre("save", async function (next) {
+  if (!this.isModified("isModified")) return next();
+  this.password = await bcrypt.hash(this.password, 12);
+});
+
+// compare user password with password store in DB
+userScema.methods.comparePassword = async function (
+  candidatePassword,
+  userPassword
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+// replace _id to userid for readablity
+userScema.set("toJSON", {
+  transform: (doc, ret) => {
+    ret.userId = ret._id;
+    delete ret._id;
+    delete ret.password;
+    delete ret.__v;
+    return ret;
+  },
+});
 
 const User = mongoose.model("User", userScema, "User");
 module.exports = User;

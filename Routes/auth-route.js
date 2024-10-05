@@ -5,7 +5,7 @@ const multer = require("multer");
 const authController = require("../Controller/auth-controller");
 
 const router = express.Router();
+const upload = multer();
 
-router.route("login").post();
-
+router.route("/register").post(upload.none(), authController.register);
 module.exports = router;

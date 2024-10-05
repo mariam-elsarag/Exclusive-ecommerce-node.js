@@ -7,6 +7,9 @@ const AppErrors = require("./Utils/AppError");
 // for global errors
 const GlobalErrors = require("./Controller/error-controller");
 
+// routes
+const authRoutes = require("./Routes/auth-route");
+
 // for security
 const helmet = require("helmet");
 const xss = require("xss-clean");
@@ -28,8 +31,14 @@ app.use(hpp());
 //Data sanitization aganist noSql injection
 app.use(mongoSanitize());
 
+// App routes
+app.use("/api/auth", authRoutes);
+
 // for routes errors
 app.all("*", (req, res, next) => {
   next(new AppErrors(`Can't find ${req.originalUrl} on this server`, 404));
 });
+
+// for global errors
+app.use(GlobalErrors);
 module.exports = app;

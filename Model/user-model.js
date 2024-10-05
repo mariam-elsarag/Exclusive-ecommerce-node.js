@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 // for encrypt password
-const bcrypt = require("node:bcrypt");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const userScema = new mongoose.Schema(
@@ -55,7 +55,7 @@ const userScema = new mongoose.Schema(
 
 // for encrypt password
 userScema.pre("save", async function (next) {
-  if (!this.isModified("isModified")) return next();
+  if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 12);
 });
 

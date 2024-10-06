@@ -93,7 +93,7 @@ exports.register = Factory.createOne(User, [
 // login
 exports.login = CatchAsync(async (req, res, next) => {
   const requiredData = ["query", "password"];
-  const filterdata = FilterBody(req.body, requiredData);
+  const filterdata = FilterBody(req.body, next, requiredData);
 
   const user = await User.findOne({
     $or: [{ email: filterdata.query }, { phone_number: filterdata.query }],

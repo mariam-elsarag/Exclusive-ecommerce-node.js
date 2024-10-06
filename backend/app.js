@@ -12,6 +12,8 @@ const authRoutes = require("./Routes/auth-route");
 const accountRoutes = require("./Routes/account-route");
 const adminRoutes = require("./Routes/admin-route");
 const contactRoutes = require("./Routes/contact-route");
+// const productRoutes = require("./Routes/product-route");
+const categoryRoutes = require("./Routes/category-route");
 
 // for security
 const helmet = require("helmet");
@@ -39,6 +41,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/account", accountRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/contact", contactRoutes);
+// app.use("/api/product", productRoutes);
+app.use("/api/category", categoryRoutes);
 
 // for routes errors
 app.all("*", (req, res, next) => {

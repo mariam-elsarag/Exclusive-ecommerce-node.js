@@ -6,7 +6,7 @@ const FilterBody = require("../Utils/FilterBody");
 // create one field
 exports.createOne = (Model, allowedFields) =>
   CatchAsync(async (req, res, next) => {
-    const filterData = FilterBody(req.body, allowedFields);
+    const filterData = FilterBody(req.body, next, allowedFields);
     const doc = await Model.create(filterData);
     res.status(201).json({ data: doc });
   });

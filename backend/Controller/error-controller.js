@@ -32,6 +32,9 @@ const handleDublicateDbData = (err) => {
   if (err.keyPattern.phone_number) {
     return new AppErrors({ phone_number: `phone number already exist` }, 400);
   }
+  // if (err.keyPattern.title) {
+  //   return new AppErrors({ title: `Title already exist` }, 400);
+  // }
 };
 const sendErrorForDev = (err, res) => {
   res.status(err.statusCode).json({

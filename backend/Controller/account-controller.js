@@ -27,7 +27,7 @@ exports.updaterUser = CatchAsync(async (req, res, next) => {
     "old_password",
     "new_password",
   ];
-  const filterdata = FilterBody(req.body, requiredData, false);
+  const filterdata = FilterBody(req.body, next, requiredData, false);
   const user = await User.findById(req.user.id);
   if (!user) {
     return next(new AppErrors("User not found", 404));

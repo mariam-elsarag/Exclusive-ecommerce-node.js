@@ -1,6 +1,6 @@
 const AppErrors = require("./AppError");
 
-const FilterBody = (body, allowedFields, fieldsRequired = true) => {
+const FilterBody = (body, next, allowedFields, fieldsRequired = true) => {
   let errors = [];
   let filter = {};
   Object.keys(body).forEach((key) => {

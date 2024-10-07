@@ -14,7 +14,8 @@ router.route("/").post(
     { name: "thumbnail", maxCount: 1 },
     { name: "images", maxCount: 10 },
   ]),
+  productController.resizeProductImages,
   productController.createNewProduct
 );
 
-module.exports = upload;
+module.exports = router;

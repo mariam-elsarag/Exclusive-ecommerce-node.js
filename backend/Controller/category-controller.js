@@ -6,8 +6,6 @@ const AppErrors = require("../Utils/AppError");
 const CatchAsync = require("../Utils/CatchAsync");
 const FilterBody = require("../Utils/FilterBody");
 const cloudinary = require("../Utils/Cloudnary");
-// controller
-const Factory = require("./handle-factory");
 
 // create new category
 exports.createNewCategory = CatchAsync(async (req, res, next) => {

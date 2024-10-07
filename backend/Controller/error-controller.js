@@ -74,6 +74,7 @@ module.exports = (err, req, res, next) => {
 
     sendErrorForProduction(error, res);
   } else {
+    // console.log(err, "i am error");
     sendErrorForDev(err, res);
   }
   next();

@@ -88,3 +88,69 @@ exports.createNewProduct = CatchAsync(async (req, res, next) => {
   );
   results.end(req.thumbnailBuffer);
 });
+
+// delete product
+exports.deleteProduct = CatchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const product = await Product.findById(id);
+
+  // not found
+  if (!product) {
+    return next(new AppErrors("Product not found", 404));
+  }
+  const publidIds = [];
+  const images = [...product.images, product.thumbnail];
+  images.forEach((image) => {
+    publidIds.push(
+      image
+        .replace("https://res.cloudinary.com/dwlbskyfd/image/upload/", "")
+        .replace(/v\d+\//, "")
+        .replace(/\.[^/.]+$/, "")
+    );
+  });
+
+  // delete images from cloudinary
+  try {
+    const result = await cloudinary.api.delete_resources(publidIds);
+  } catch (error) {
+    return next(new AppErrors("Error deleting image from Cloudinary", 500));
+  }
+
+  // actually delete product from DB
+  await Product.findByIdAndDelete(id);
+
+  res.status(204).json({ data: null });
+});
+
+// delete image
+exports.deleteProductImage = CatchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const { image_url } = req.body;
+  if (!image_url) {
+    return next(new AppErrors("image is required", 400));
+  }
+
+  const product = await Product.findById(id);
+
+  // not found
+  if (!product) {
+    return next(new AppErrors("Product not found", 404));
+  }
+  // for delete image
+  const publicId = image_url
+    .replace("https://res.cloudinary.com/dwlbskyfd/image/upload/", "")
+    .replace(/v\d+\//, "")
+    .replace(/\.[^/.]+$/, "");
+
+  // delete image from cloudinary
+  try {
+    const result = await cloudinary.api.delete_resources([publicId]);
+  } catch (error) {
+    return next(new AppErrors("Error deleting image from Cloudinary", 500));
+  }
+
+  product.images = product.images.filter((img) => img !== image_url);
+
+  await product.save();
+  res.status(200).json({ product });
+});

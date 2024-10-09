@@ -48,6 +48,7 @@ const verifyToken = async (token) => {
 // Protect route
 exports.protect = CatchAsync(async (req, res, next) => {
   const token = extractAuthorization(req);
+
   if (!token) return next(new AppErrors("Unauthorized: Access is denied", 401));
   // check if this token is valid
   const decoded = await verifyToken(token);

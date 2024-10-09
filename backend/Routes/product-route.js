@@ -7,9 +7,9 @@ const upload = require("../Middleware/multer");
 const authController = require("../Controller/auth-controller");
 const productController = require("../Controller/product-controller");
 
+router.use(authController.protect, authController.restrectTo("admin"));
+
 router.route("/").post(
-  authController.protect,
-  authController.restrectTo("admin"),
   upload.fields([
     { name: "thumbnail", maxCount: 1 },
     { name: "images", maxCount: 10 },
@@ -18,4 +18,8 @@ router.route("/").post(
   productController.createNewProduct
 );
 
+router.route("/:id").delete(productController.deleteProduct);
+router
+  .route("/:id/images")
+  .delete(upload.none(), productController.deleteProductImage);
 module.exports = router;

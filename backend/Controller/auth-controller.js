@@ -6,12 +6,12 @@ const User = require("../Model/user-model");
 const AppErrors = require("../Utils/AppError");
 const CatchAsync = require("../Utils/CatchAsync");
 const FilterBody = require("../Utils/FilterBody");
+const ApiFeature = require("../Utils/ApiFeatures");
 
 // controller
 const Factory = require("./handle-factory");
 // for generation token
 const generateToken = (user) => {
-  console.log(user, "roma");
   return jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE_IN,
   });
@@ -129,6 +129,6 @@ exports.refreshToken = CatchAsync(async (req, res, next) => {
     return next(new AppErrors("User recently changed password", 404));
   }
   const newAccessToken = generateToken(user);
-  createRefreshToken(user, res);
+
   res.status(200).json({ token: newAccessToken });
 });

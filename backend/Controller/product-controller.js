@@ -7,6 +7,7 @@ const AppErrors = require("../Utils/AppError");
 const CatchAsync = require("../Utils/CatchAsync");
 const FilterBody = require("../Utils/FilterBody");
 const cloudinary = require("../Utils/Cloudnary");
+const ApiFeature = require("../Utils/ApiFeatures");
 
 exports.resizeProductImages = CatchAsync(async (req, res, next) => {
   if (!req.files) return next();
@@ -22,6 +23,18 @@ exports.resizeProductImages = CatchAsync(async (req, res, next) => {
     req.thumbnailBuffer = thumbnailBuffer;
   }
   next();
+});
+
+// Get all products
+exports.getAllProduct = CatchAsync(async (req, res, next) => {
+  const features = new ApiFeature(Product.find(), req.query)
+    .filter()
+    .search(["title"])
+    .pagination(8);
+
+  const products = await features.getPaginations(Product, req);
+  console.log(products, "l");
+  res.status(200).json(products);
 });
 // create new product
 exports.createNewProduct = CatchAsync(async (req, res, next) => {

@@ -30,41 +30,6 @@ const createRefreshToken = (user, res) => {
     path: "/api/auth/refresh-token",
   });
 };
-// to check if have authorization
-const extractAuthorization = (req) => {
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    return req.headers.authorization.split(" ")[1];
-  }
-  return null;
-};
-
-// check token
-const verifyToken = async (token) => {
-  return await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-};
-// Protect route
-exports.protect = CatchAsync(async (req, res, next) => {
-  const token = extractAuthorization(req);
-
-  if (!token) return next(new AppErrors("Unauthorized: Access is denied", 401));
-  // check if this token is valid
-  const decoded = await verifyToken(token);
-  if (!decoded)
-    return next(new AppErrors("Unauthorized: Access is denied", 401));
-
-  // find user
-  const user = await User.findById(decoded.id);
-
-  if (!user) return next(new AppErrors("User no longer exists", 404));
-  if (user.checkChangePasswordAfterJWT(decoded.iat)) {
-    return next(new AppErrors("User recently changed password", 404));
-  }
-  req.user = user;
-  next();
-});
 
 // authrization
 exports.restrectTo = (...roles) => {

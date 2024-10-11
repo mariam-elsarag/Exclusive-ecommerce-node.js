@@ -1,6 +1,7 @@
 const sharp = require("sharp");
 // model
 const Product = require("../Model/product-model");
+const Favorite = require("../Model/favorite-model");
 
 // utils
 const AppErrors = require("../Utils/AppError");
@@ -30,10 +31,39 @@ exports.getAllProduct = CatchAsync(async (req, res, next) => {
   const features = new ApiFeature(Product.find(), req.query)
     .filter()
     .search(["title"])
+    .limitFields(
+      "thumbnail title price is_new ratingQuantity ratingAverage productId offer_price"
+    )
     .pagination(8);
 
   const products = await features.getPaginations(Product, req);
-  console.log(products, "l");
+  // if not authorized will return favorite null
+  if (!req.user) {
+    products.results = products.results.map((item) => {
+      const { _id, ...rest } = item._doc;
+      return {
+        ...rest,
+        favorite: null,
+        productId: _id,
+      };
+    });
+  } else {
+    const favoriteProducts = await Favorite.find({
+      user: req.user._id,
+    });
+    products.results = products.results.map((item) => {
+      const { _id, ...rest } = item._doc;
+
+      return {
+        ...rest,
+        favorite: favoriteProducts.some(
+          (item) => item.product.toString() === _id.toString()
+        ),
+        productId: _id,
+      };
+    });
+  }
+
   res.status(200).json(products);
 });
 // create new product

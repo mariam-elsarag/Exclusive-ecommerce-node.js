@@ -26,6 +26,10 @@ class ApiFeature {
     }
     return this;
   }
+  limitFields(fields) {
+    this.query = this.query.select(fields);
+    return this;
+  }
   pagination(limitation = 10) {
     const page = +this.queryString.page || 1;
     const limit = +limitation;

@@ -2,15 +2,18 @@ const express = require("express");
 const router = express.Router();
 
 const upload = require("../Middleware/multer");
-
+// middleware
+const protect = require("../Middleware/protect");
 // controller
-const authController = require("../Controller/auth-controller");
 const productController = require("../Controller/product-controller");
+const authController = require("../Controller/auth-controller");
 
+// route
+const favoriteRoute = require("./favorite-route.js");
 router
   .route("/")
   .post(
-    authController.protect,
+    protect(),
     authController.restrectTo("admin"),
     upload.fields([
       { name: "thumbnail", maxCount: 1 },
@@ -19,11 +22,16 @@ router
     productController.resizeProductImages,
     productController.createNewProduct
   )
-  .get(productController.getAllProduct);
+  .get(protect(false), productController.getAllProduct);
 
-router.use(authController.protect, authController.restrectTo("admin"));
+router.use(protect(), authController.restrectTo("admin"));
+
 router.route("/:id").delete(productController.deleteProduct);
 router
   .route("/:id/images")
   .delete(upload.none(), productController.deleteProductImage);
+
+// for favorite product
+router.use("/favorite/:productId/", favoriteRoute);
+
 module.exports = router;

@@ -4,11 +4,12 @@ const multer = require("multer");
 const router = express.Router();
 const upload = multer();
 
+// middleware
+const protect = require("../Middleware/protect");
 // controller
-const authController = require("../Controller/auth-controller");
 const accountController = require("../Controller/account-controller");
 
-router.use(authController.protect);
+router.use(protect());
 router
   .route("/")
   .get(accountController.getUser)

@@ -6,7 +6,7 @@ const User = require("../Model/user-model");
 const AppErrors = require("../Utils/AppError");
 const CatchAsync = require("../Utils/CatchAsync");
 const FilterBody = require("../Utils/FilterBody");
-const ApiFeature = require("../Utils/ApiFeatures");
+const verifyUser = require("../Utils/verifyUser");
 
 // controller
 const Factory = require("./handle-factory");
@@ -83,17 +83,12 @@ exports.refreshToken = CatchAsync(async (req, res, next) => {
   const refreshToken = req.cookies.refreshToken;
 
   if (!refreshToken) return next(new AppErrors("No refresh token", 403));
-  const decoded = await verifyToken(refreshToken);
-  if (!decoded)
-    return next(new AppErrors("Unauthorized: Access is denied", 401));
-  //  find user
-  const user = await User.findById(decoded.id);
-
-  if (!user) return next(new AppErrors("User no longer exists", 404));
-  if (user.checkChangePasswordAfterJWT(decoded.iat)) {
-    return next(new AppErrors("User recently changed password", 404));
+  try {
+    await verifyUser(token, req, next);
+    const user = req.user;
+    const newAccessToken = generateToken(user);
+    res.status(200).json({ token: newAccessToken });
+  } catch (err) {
+    return next(new AppErrors("Failed to refresh token", 500));
   }
-  const newAccessToken = generateToken(user);
-
-  res.status(200).json({ token: newAccessToken });
 });

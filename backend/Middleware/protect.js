@@ -1,10 +1,7 @@
-const { promisify } = require("node:util");
-const jwt = require("jsonwebtoken");
-// model
-const User = require("../Model/user-model");
 // utils
 const AppErrors = require("../Utils/AppError");
 const CatchAsync = require("../Utils/CatchAsync");
+const verifyUser = require("../Utils/verifyUser");
 
 // to check if have authorization
 const extractAuthorization = (req) => {
@@ -17,28 +14,6 @@ const extractAuthorization = (req) => {
   return null;
 };
 
-// check token
-const verifyToken = async (token) => {
-  return await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-};
-
-// verify user
-const verifyUser = CatchAsync(async (token, req, next) => {
-  const decoded = await verifyToken(token);
-  if (!decoded)
-    return next(new AppErrors("Unauthorized: Access is denied", 401));
-
-  const user = await User.findById(decoded.id);
-  if (!user) return next(new AppErrors("User no longer exists", 404));
-
-  if (user.checkChangePasswordAfterJWT(decoded.iat)) {
-    return next(new AppErrors("User recently changed password", 401));
-  }
-
-  req.user = user;
-  next();
-});
-
 // Protect route middleware
 const protect = (isRequire = true) =>
   CatchAsync(async (req, res, next) => {
@@ -46,14 +21,13 @@ const protect = (isRequire = true) =>
     if (isRequire) {
       if (!token)
         return next(new AppErrors("Unauthorized: Access is denied", 401));
-      await verifyUser(token, req, next);
-    } else {
-      if (token) {
-        await verifyUser(token, req, next);
-      } else {
-        next();
-      }
     }
+    try {
+      await verifyUser(token, req, next);
+    } catch (err) {
+      return next(new AppErrors("Error while checking user", 500));
+    }
+    next();
   });
 
 module.exports = protect;

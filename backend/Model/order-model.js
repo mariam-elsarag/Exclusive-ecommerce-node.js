@@ -12,6 +12,11 @@ orderSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "User is required"],
     },
+    status: {
+      type: String,
+      default: "pending",
+      enum: ["pending", "paid", "shipped", "delivered", "cancelled"],
+    },
   },
   { timestamps: true }
 );

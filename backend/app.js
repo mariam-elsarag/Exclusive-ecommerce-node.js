@@ -13,6 +13,7 @@ const accountRoutes = require("./Routes/account-route");
 const contactRoutes = require("./Routes/contact-route");
 const productRoutes = require("./Routes/product-route");
 const categoryRoutes = require("./Routes/category-route");
+const adminRoutes = require("./Routes/admin-route");
 
 // for security
 const helmet = require("helmet");
@@ -40,6 +41,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/account", accountRoutes);
 
 app.use("/api/contact", contactRoutes);
+// admin route
+app.use("/api/admin", adminRoutes);
+
 // for product
 app.use("/api/product", productRoutes);
 app.use("/api/category", categoryRoutes);

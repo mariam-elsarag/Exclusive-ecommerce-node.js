@@ -21,6 +21,9 @@ const handleValidatorError = (err) => {
   if (err.errors.email) {
     errors.push({ email: err.errors.email.message });
   }
+  if (err.errors.exp_date) {
+    errors.push({ exp_date: err.errors.exp_date.message });
+  }
   return new AppErrors(errors, 400);
 };
 // Db errors
@@ -36,6 +39,15 @@ const handleDublicateDbData = (err) => {
   //   return new AppErrors({ title: `Title already exist` }, 400);
   // }
 };
+// cast error
+const handleCastError = (err) => {
+  let errors = [];
+  if (err.errors.exp_date) {
+    errors.push({ exp_date: "Invalid date formate" });
+  }
+  return new AppErrors(errors, 400);
+};
+
 const sendErrorForDev = (err, res) => {
   res.status(err.statusCode).json({
     message: err.message,
@@ -69,13 +81,15 @@ module.exports = (err, req, res, next) => {
     ) {
       error = handleJWTError();
     }
-
+    if (error.name === "CastError") {
+      error = handleCastError(error);
+    }
     if (error.name === "TokenExpiredError") error = handleExpireJWTError();
 
     sendErrorForProduction(error, res);
   } else {
     sendErrorForDev(err, res);
   }
-  console.log(err, "i am error");
+
   next();
 };

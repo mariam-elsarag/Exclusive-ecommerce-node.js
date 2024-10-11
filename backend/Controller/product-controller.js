@@ -9,6 +9,7 @@ const CatchAsync = require("../Utils/CatchAsync");
 const FilterBody = require("../Utils/FilterBody");
 const cloudinary = require("../Utils/Cloudnary");
 const ApiFeature = require("../Utils/ApiFeatures");
+const toggleFavorite = require("../Utils/toggleFavorite");
 
 exports.resizeProductImages = CatchAsync(async (req, res, next) => {
   if (!req.files) return next();
@@ -38,33 +39,18 @@ exports.getAllProduct = CatchAsync(async (req, res, next) => {
 
   const products = await features.getPaginations(Product, req);
   // if not authorized will return favorite null
-  if (!req.user) {
-    products.results = products.results.map((item) => {
-      const { _id, ...rest } = item._doc;
-      return {
-        ...rest,
-        favorite: null,
-        productId: _id,
-      };
-    });
-  } else {
-    const favoriteProducts = await Favorite.find({
-      user: req.user._id,
-    });
-    products.results = products.results.map((item) => {
-      const { _id, ...rest } = item._doc;
-
-      return {
-        ...rest,
-        favorite: favoriteProducts.some(
-          (item) => item.product.toString() === _id.toString()
-        ),
-        productId: _id,
-      };
-    });
-  }
-
+  products.results = await toggleFavorite(products.results, req);
   res.status(200).json(products);
+});
+// get product details
+exports.getProductDetails = CatchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const product = await Product.findById(id).select(
+    "-__v -updatedAt -createdAt -category"
+  );
+
+  const productDetails = await toggleFavorite([product], req);
+  res.status(200).json({ ...productDetails[0] });
 });
 // create new product
 exports.createNewProduct = CatchAsync(async (req, res, next) => {

@@ -28,7 +28,7 @@ exports.getUserFavoriteList = CatchAsync(async (req, res, next) => {
       favoriteId: _id,
     };
   });
-  res.status(200).json({ favoriteList });
+  res.status(200).json({ ...favoriteList });
 });
 
 // put favorite

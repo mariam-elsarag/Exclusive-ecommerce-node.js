@@ -29,9 +29,17 @@ router
   )
   .get(protect(false), productController.getAllProduct);
 
+router
+  .route("/:id")
+  .delete(
+    protect(),
+    authController.restrectTo("admin"),
+    productController.deleteProduct
+  )
+  .get(productController.getProductDetails);
+
 router.use(protect(), authController.restrectTo("admin"));
 
-router.route("/:id").delete(productController.deleteProduct);
 router
   .route("/:id/images")
   .delete(upload.none(), productController.deleteProductImage);

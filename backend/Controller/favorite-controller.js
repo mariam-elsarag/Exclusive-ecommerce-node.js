@@ -9,14 +9,32 @@ const ApiFeatures = require("../Utils/ApiFeatures");
 // get user favorite list
 exports.getUserFavoriteList = CatchAsync(async (req, res, next) => {
   const features = new ApiFeatures(
-    Favorite.find({ _id: req.user._id }),
+    Favorite.find({ user: req.user._id }).populate({
+      path: "product",
+      select:
+        "thumbnail title price is_new ratingQuantity ratingAverage offer_price",
+    }),
     req.query
-  ).pagination(8);
+  )
+    .limitFields("product favoriteId")
+    .pagination(8);
+  const favoriteList = await features.getPaginations(Favorite, req);
+
+  favoriteList.results = favoriteList.results.map((item) => {
+    const { _id, ...rest } = item._doc;
+    return {
+      ...rest,
+      favorite: true,
+      favoriteId: _id,
+    };
+  });
+  res.status(200).json({ favoriteList });
 });
 
 // put favorite
 exports.toggleFavorite = CatchAsync(async (req, res, next) => {
   const { productId } = req.params;
+
   const isFavoriteProduct = await Favorite.findOne({
     product: productId,
     user: req.user._id,

@@ -24,5 +24,6 @@ const verifyUser = CatchAsync(async (token, req, next) => {
   }
 
   req.user = user;
+  next();
 });
 module.exports = verifyUser;

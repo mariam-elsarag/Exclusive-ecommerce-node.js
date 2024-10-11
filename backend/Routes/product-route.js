@@ -10,6 +10,11 @@ const authController = require("../Controller/auth-controller");
 
 // route
 const favoriteRoute = require("./favorite-route.js");
+
+// for favorite product
+router.use("/:productId/favorite", favoriteRoute);
+router.use("/favorite", favoriteRoute);
+
 router
   .route("/")
   .post(
@@ -30,8 +35,5 @@ router.route("/:id").delete(productController.deleteProduct);
 router
   .route("/:id/images")
   .delete(upload.none(), productController.deleteProductImage);
-
-// for favorite product
-router.use("/favorite/:productId/", favoriteRoute);
 
 module.exports = router;

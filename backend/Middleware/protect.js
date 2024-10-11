@@ -22,12 +22,16 @@ const protect = (isRequire = true) =>
       if (!token)
         return next(new AppErrors("Unauthorized: Access is denied", 401));
     }
-    try {
-      await verifyUser(token, req, next);
-    } catch (err) {
-      return next(new AppErrors("Error while checking user", 500));
+
+    if (token) {
+      try {
+        await verifyUser(token, req, next);
+      } catch (err) {
+        return next(new AppErrors("Error while checking user", 500));
+      }
+    } else {
+      next();
     }
-    next();
   });
 
 module.exports = protect;

@@ -10,7 +10,6 @@ const GlobalErrors = require("./Controller/error-controller");
 // routes
 const authRoutes = require("./Routes/auth-route");
 const accountRoutes = require("./Routes/account-route");
-const adminRoutes = require("./Routes/admin-route");
 const contactRoutes = require("./Routes/contact-route");
 const productRoutes = require("./Routes/product-route");
 const categoryRoutes = require("./Routes/category-route");
@@ -39,7 +38,7 @@ app.use(mongoSanitize());
 // App routes
 app.use("/api/auth", authRoutes);
 app.use("/api/account", accountRoutes);
-app.use("/api/admin", adminRoutes);
+
 app.use("/api/contact", contactRoutes);
 // for product
 app.use("/api/product", productRoutes);

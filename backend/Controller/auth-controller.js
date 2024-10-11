@@ -1,4 +1,3 @@
-const { promisify } = require("node:util");
 const jwt = require("jsonwebtoken");
 // model
 const User = require("../Model/user-model");
@@ -31,23 +30,8 @@ const createRefreshToken = (user, res) => {
   });
 };
 
-// authrization
-exports.restrectTo = (...roles) => {
-  return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
-      return next(
-        new AppErrors(
-          "Access denied: You do not have permission to perform this action",
-          403
-        )
-      );
-    }
-    return next();
-  };
-};
 // Controllers
 // register
-
 exports.register = Factory.createOne(User, [
   "first_name",
   "last_name",

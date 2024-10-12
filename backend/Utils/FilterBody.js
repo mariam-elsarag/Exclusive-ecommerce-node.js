@@ -1,4 +1,4 @@
-const AppErrors = require("./AppError");
+import AppErrors from "./AppError.js";
 
 const FilterBody = (body, next, allowedFields, fieldsRequired = true) => {
   let errors = [];
@@ -20,4 +20,4 @@ const FilterBody = (body, next, allowedFields, fieldsRequired = true) => {
   }
   return filter;
 };
-module.exports = FilterBody;
+export default FilterBody;

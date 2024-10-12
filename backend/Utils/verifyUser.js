@@ -1,10 +1,10 @@
-const { promisify } = require("node:util");
-const jwt = require("jsonwebtoken");
+import { promisify } from "node:util";
+import jwt from "jsonwebtoken";
 // model
-const User = require("../Model/user-model");
+import User from "../Model/user-model.js";
 // Utils
-const CatchAsync = require("./CatchAsync");
-const AppErrors = require("./AppError");
+import CatchAsync from "./CatchAsync.js";
+import AppErrors from "./AppError.js";
 
 // check token
 const verifyToken = async (token) => {
@@ -26,4 +26,4 @@ const verifyUser = CatchAsync(async (token, req, next) => {
   req.user = user;
   next();
 });
-module.exports = verifyUser;
+export default verifyUser;

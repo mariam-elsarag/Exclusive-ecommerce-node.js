@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const moment = require("moment");
+import mongoose from "mongoose";
+import moment from "moment";
 
 const discountSchema = new mongoose.Schema({
   discount_code: {
@@ -9,6 +9,10 @@ const discountSchema = new mongoose.Schema({
   percentage: {
     type: Number,
     required: [true, "Discount percentage is required"],
+  },
+  usage_limit: {
+    type: Number,
+    required: [true, "usage for discount  is required"],
   },
   exp_date: {
     type: Date,
@@ -53,6 +57,10 @@ discountSchema.pre("save", function (next) {
   updateStatus(this);
   next();
 });
+discountSchema.pre(/^find/, function (next) {
+  updateStatus(this);
+  next();
+});
 
 discountSchema.set("toJSON", {
   transform: (doc, ret) => {
@@ -65,4 +73,4 @@ discountSchema.set("toJSON", {
 });
 
 const Discount = mongoose.model("Discount", discountSchema, "Discount");
-module.exports = Discount;
+export default Discount;

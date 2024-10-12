@@ -1,14 +1,17 @@
-const express = require("express");
+import express from "express";
 
 const router = express.Router({ mergeParams: true });
 // middleware
-const protect = require("../Middleware/protect");
+import protect from "../Middleware/protect.js";
 
-const favoriteController = require("../Controller/favorite-controller");
+import {
+  getUserFavoriteList,
+  toggleFavorite,
+} from "../Controller/favorite-controller.js";
 
 router
   .route("/")
-  .get(protect(), favoriteController.getUserFavoriteList)
-  .patch(protect(), favoriteController.toggleFavorite);
+  .get(protect(), getUserFavoriteList)
+  .patch(protect(), toggleFavorite);
 
-module.exports = router;
+export default router;

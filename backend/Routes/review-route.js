@@ -1,15 +1,15 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
 // middleware
-const upload = require("../Middleware/multer");
-const protect = require("../Middleware/protect");
-const authorized = require("../Middleware/authorized");
+
+import protect from "../Middleware/protect.js";
+import authorized from "../Middleware/authorized.js";
 
 // controller
-const reviewController = require("../Controller/review-controller");
+const reviewController = require("../Controller/review-controller.js");
 
 router.use(protect());
 
-router.route("/").post();
-module.exports = router;
+// router.route("/").post();
+export default router;

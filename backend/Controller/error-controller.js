@@ -1,14 +1,15 @@
-const AppErrors = require("../Utils/AppError");
+import AppErrors from "../Utils/AppError.js";
 
-// jwt
+// JWT error handling
 const handleJWTError = () => {
   return new AppErrors("Invalid token", 401);
 };
+
 const handleExpireJWTError = () => {
   return new AppErrors("Your token has expired!", 401);
 };
 
-// validator error
+// Validator error
 const handleValidatorError = (err) => {
   let errors = [];
 
@@ -26,24 +27,21 @@ const handleValidatorError = (err) => {
   }
   return new AppErrors(errors, 400);
 };
-// Db errors
-// duplicate
+
+// Database errors
 const handleDublicateDbData = (err) => {
   if (err.keyPattern.email) {
-    return new AppErrors({ email: `Email already exist` }, 400);
+    return new AppErrors({ email: "Email already exists" }, 400);
   }
   if (err.keyPattern.phone_number) {
-    return new AppErrors({ phone_number: `phone number already exist` }, 400);
+    return new AppErrors({ phone_number: "Phone number already exists" }, 400);
   }
-  // if (err.keyPattern.title) {
-  //   return new AppErrors({ title: `Title already exist` }, 400);
-  // }
 };
-// cast error
+
 const handleCastError = (err) => {
   let errors = [];
   if (err.errors.exp_date) {
-    errors.push({ exp_date: "Invalid date formate" });
+    errors.push({ exp_date: "Invalid date format" });
   }
   return new AppErrors(errors, 400);
 };
@@ -55,6 +53,7 @@ const sendErrorForDev = (err, res) => {
     error: err,
   });
 };
+
 const sendErrorForProduction = (err, res) => {
   if (err.isOperational) {
     res.status(err.statusCode).json({ errors: err.message });
@@ -63,7 +62,7 @@ const sendErrorForProduction = (err, res) => {
   }
 };
 
-module.exports = (err, req, res, next) => {
+const GlobalErrors = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   if (process.env.NODE_ENV === "production") {
     let error = err;
@@ -76,7 +75,7 @@ module.exports = (err, req, res, next) => {
       error = handleDublicateDbData(error);
     }
     if (
-      error.name === "jsonWebTokenError" ||
+      error.name === "JsonWebTokenError" ||
       error.name === "invalid signature"
     ) {
       error = handleJWTError();
@@ -93,3 +92,5 @@ module.exports = (err, req, res, next) => {
 
   next();
 };
+
+export default GlobalErrors;

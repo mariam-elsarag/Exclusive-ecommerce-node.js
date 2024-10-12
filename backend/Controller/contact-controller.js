@@ -1,17 +1,14 @@
 // model
-const Contact = require("../Model/contact-model");
+import Contact from "../Model/contact-model.js";
 
 // utils
-const AppErrors = require("../Utils/AppError");
-const CatchAsync = require("../Utils/CatchAsync");
-const FilterBody = require("../Utils/FilterBody");
 
 // controller
-const Factory = require("../Controller/handle-factory");
+import { createOne, deleteOne, getOne } from "../Controller/handle-factory.js";
 
 // controllers
 // create new contact form
-exports.createNewContact = Factory.createOne(Contact, [
+export const createNewContact = createOne(Contact, [
   "user",
   "email",
   "phone_number",
@@ -19,7 +16,7 @@ exports.createNewContact = Factory.createOne(Contact, [
 ]);
 
 // delete contact form (only admin )
-exports.deleteContactForm = Factory.deleteOne(Contact);
+export const deleteContactForm = deleteOne(Contact);
 
 // get one contact form (only admin)
-exports.getContactForm = Factory.getOne(Contact);
+export const getContactForm = getOne(Contact);

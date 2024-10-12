@@ -1,24 +1,28 @@
-const express = require("express");
+import express from "express";
 
-const upload = require("../Middleware/multer");
+import upload from "../Middleware/multer.js";
 
 const router = express.Router();
 // middleware
-const protect = require("../Middleware/protect");
-const authrized = require("../Middleware/authorized");
+import protect from "../Middleware/protect.js";
+import authrized from "../Middleware/authorized.js";
 // controller
-const categoryController = require("../Controller/category-controller");
+import {
+  getAllCategory,
+  deleteCategory,
+  createNewCategory,
+} from "../Controller/category-controller.js";
 
 router
   .route("/")
-  .get(categoryController.getAllCategory)
+  .get(getAllCategory)
   .post(
     protect(),
     authrized("admin"),
     upload.single("icon"),
-    categoryController.createNewCategory
+    createNewCategory
   );
 
 router.use(protect(), authrized("admin"));
-router.route("/:id").delete(categoryController.deleteCategory);
-module.exports = router;
+router.route("/:id").delete(deleteCategory);
+export default router;

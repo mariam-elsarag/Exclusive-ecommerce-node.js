@@ -1,7 +1,7 @@
 // utils
-const AppErrors = require("../Utils/AppError");
-const CatchAsync = require("../Utils/CatchAsync");
-const verifyUser = require("../Utils/verifyUser");
+import AppErrors from "../Utils/AppError.js";
+import CatchAsync from "../Utils/CatchAsync.js";
+import verifyUser from "../Utils/verifyUser.js";
 
 // to check if have authorization
 const extractAuthorization = (req) => {
@@ -34,4 +34,4 @@ const protect = (isRequire = true) =>
     }
   });
 
-module.exports = protect;
+export default protect;

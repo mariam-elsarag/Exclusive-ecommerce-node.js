@@ -1,12 +1,12 @@
-const express = require("express");
+import express from "express";
 
 // middleware
-const upload = require("../Middleware/multer");
-const protect = require("../Middleware/protect");
+import upload from "../Middleware/multer.js";
+import protect from "../Middleware/protect.js";
 
 const router = express.Router();
 
 router.use(protect());
 
 router.route("/").post();
-module.exports = router;
+export default router;

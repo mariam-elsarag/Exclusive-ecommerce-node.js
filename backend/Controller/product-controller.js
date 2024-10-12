@@ -1,17 +1,17 @@
-const sharp = require("sharp");
+import sharp from "sharp";
 // model
-const Product = require("../Model/product-model");
-const Favorite = require("../Model/favorite-model");
+import Product from "../Model/product-model.js";
+import Favorite from "../Model/favorite-model.js";
 
 // utils
-const AppErrors = require("../Utils/AppError");
-const CatchAsync = require("../Utils/CatchAsync");
-const FilterBody = require("../Utils/FilterBody");
-const cloudinary = require("../Utils/Cloudnary");
-const ApiFeature = require("../Utils/ApiFeatures");
-const toggleFavorite = require("../Utils/toggleFavorite");
+import AppErrors from "../Utils/AppError.js";
+import CatchAsync from "../Utils/CatchAsync.js";
+import FilterBody from "../Utils/FilterBody.js";
+import cloudinary from "../Utils/Cloudnary.js";
+import ApiFeature from "../Utils/ApiFeatures.js";
+import toggleFavorite from "../Utils/toggleFavorite.js";
 
-exports.resizeProductImages = CatchAsync(async (req, res, next) => {
+export const resizeProductImages = CatchAsync(async (req, res, next) => {
   if (!req.files) return next();
 
   // resize image
@@ -28,7 +28,7 @@ exports.resizeProductImages = CatchAsync(async (req, res, next) => {
 });
 
 // Get all products
-exports.getAllProduct = CatchAsync(async (req, res, next) => {
+export const getAllProduct = CatchAsync(async (req, res, next) => {
   const features = new ApiFeature(Product.find(), req.query)
     .filter()
     .search(["title"])
@@ -43,7 +43,7 @@ exports.getAllProduct = CatchAsync(async (req, res, next) => {
   res.status(200).json(products);
 });
 // get product details
-exports.getProductDetails = CatchAsync(async (req, res, next) => {
+export const getProductDetails = CatchAsync(async (req, res, next) => {
   const { id } = req.params;
   const product = await Product.findById(id).select(
     "-__v -updatedAt -createdAt -category"
@@ -53,7 +53,7 @@ exports.getProductDetails = CatchAsync(async (req, res, next) => {
   res.status(200).json({ ...productDetails[0] });
 });
 // create new product
-exports.createNewProduct = CatchAsync(async (req, res, next) => {
+export const createNewProduct = CatchAsync(async (req, res, next) => {
   const allowFields = [
     "title",
     "description",
@@ -119,7 +119,7 @@ exports.createNewProduct = CatchAsync(async (req, res, next) => {
 });
 
 // delete product
-exports.deleteProduct = CatchAsync(async (req, res, next) => {
+export const deleteProduct = CatchAsync(async (req, res, next) => {
   const { id } = req.params;
   const product = await Product.findById(id);
 
@@ -152,7 +152,7 @@ exports.deleteProduct = CatchAsync(async (req, res, next) => {
 });
 
 // delete image
-exports.deleteProductImage = CatchAsync(async (req, res, next) => {
+export const deleteProductImage = CatchAsync(async (req, res, next) => {
   const { id } = req.params;
   const { image_url } = req.body;
   if (!image_url) {

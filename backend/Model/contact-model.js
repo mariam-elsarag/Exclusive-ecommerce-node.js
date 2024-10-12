@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const validator = require("validator");
+import mongoose from "mongoose";
+import validator from "validator";
 
 const contactSchema = new mongoose.Schema({
   user: {
@@ -35,4 +35,4 @@ contactSchema.set("toJSON", {
   },
 });
 const Contact = mongoose.model("Contact", contactSchema, "Contact");
-module.exports = Contact;
+export default Contact;

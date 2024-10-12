@@ -1,25 +1,25 @@
-const express = require("express");
-const cors = require("cors");
+import express from "express";
+import cors from "cors";
 
 // Utils
-const AppErrors = require("./Utils/AppError");
+import AppErrors from "./Utils/AppError.js";
 
 // for global errors
-const GlobalErrors = require("./Controller/error-controller");
+import GlobalErrors from "./Controller/error-controller.js";
 
 // routes
-const authRoutes = require("./Routes/auth-route");
-const accountRoutes = require("./Routes/account-route");
-const contactRoutes = require("./Routes/contact-route");
-const productRoutes = require("./Routes/product-route");
-const categoryRoutes = require("./Routes/category-route");
-const adminRoutes = require("./Routes/admin-route");
+import authRoutes from "./Routes/auth-route.js";
+import accountRoutes from "./Routes/account-route.js";
+import contactRoutes from "./Routes/contact-route.js";
+import productRoutes from "./Routes/product-route.js";
+import categoryRoutes from "./Routes/category-route.js";
+import adminRoutes from "./Routes/admin-route.js";
 
 // for security
-const helmet = require("helmet");
-const xss = require("xss-clean");
-const hpp = require("hpp");
-const mongoSanitize = require("express-mongo-sanitize");
+import helmet from "helmet";
+import xss from "xss-clean";
+import hpp from "hpp";
+import mongoSanitize from "express-mongo-sanitize";
 
 const app = express();
 
@@ -55,4 +55,5 @@ app.all("*", (req, res, next) => {
 
 // for global errors
 app.use(GlobalErrors);
-module.exports = app;
+
+export default app;

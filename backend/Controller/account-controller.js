@@ -1,15 +1,15 @@
 // model
-const User = require("../Model/user-model");
+import User from "../Model/user-model.js";
 
 // utils
-const AppErrors = require("../Utils/AppError");
-const CatchAsync = require("../Utils/CatchAsync");
-const FilterBody = require("../Utils/FilterBody");
+import AppErrors from "../Utils/AppError.js";
+import CatchAsync from "../Utils/CatchAsync.js";
+import FilterBody from "../Utils/FilterBody.js";
 
 // controller
 
 // get user data
-exports.getUser = CatchAsync(async (req, res, next) => {
+export const getUser = CatchAsync(async (req, res, next) => {
   const user = await User.findById(req.user.id);
   if (!user) {
     return next(new AppErrors("User not found", 404));
@@ -18,7 +18,7 @@ exports.getUser = CatchAsync(async (req, res, next) => {
 });
 
 // update user data
-exports.updaterUser = CatchAsync(async (req, res, next) => {
+export const updaterUser = CatchAsync(async (req, res, next) => {
   const requiredData = [
     "first_name",
     "last_name",

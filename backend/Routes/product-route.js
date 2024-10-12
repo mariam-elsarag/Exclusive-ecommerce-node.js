@@ -1,15 +1,22 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
-const upload = require("../Middleware/multer");
+import upload from "../Middleware/multer.js";
 // middleware
-const protect = require("../Middleware/protect");
-const authrized = require("../Middleware/authorized.js");
+import protect from "../Middleware/protect.js";
+import authrized from "../Middleware/authorized.js";
 // controller
-const productController = require("../Controller/product-controller");
+import {
+  resizeProductImages,
+  createNewProduct,
+  getAllProduct,
+  deleteProduct,
+  getProductDetails,
+  deleteProductImage,
+} from "../Controller/product-controller.js";
 
 // route
-const favoriteRoute = require("./favorite-route.js");
+import favoriteRoute from "./favorite-route.js";
 
 // for favorite product
 router.use("/:productId/favorite", favoriteRoute);
@@ -24,23 +31,18 @@ router
       { name: "thumbnail", maxCount: 1 },
       { name: "images", maxCount: 10 },
     ]),
-    productController.resizeProductImages,
-    productController.createNewProduct
+    resizeProductImages,
+    createNewProduct
   )
-  .get(protect(false), productController.getAllProduct);
+  .get(protect(false), getAllProduct);
 
 router
   .route("/:id")
-  .delete(protect(), authrized("admin"), productController.deleteProduct)
-  .get(protect(false), productController.getProductDetails);
+  .delete(protect(), authrized("admin"), deleteProduct)
+  .get(protect(false), getProductDetails);
 
 router
   .route("/:id/images")
-  .delete(
-    protect(),
-    authrized("admin"),
-    upload.none(),
-    productController.deleteProductImage
-  );
+  .delete(protect(), authrized("admin"), upload.none(), deleteProductImage);
 
-module.exports = router;
+export default router;

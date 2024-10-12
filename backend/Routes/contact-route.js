@@ -1,21 +1,22 @@
-const express = require("express");
-const multer = require("multer");
+import express from "express";
+import multer from "multer";
 
 const router = express.Router();
 const upload = multer();
 // middleware
-const protect = require("../Middleware/protect");
-const authrized = require("../Middleware/authorized");
+import protect from "../Middleware/protect.js";
+import authrized from "../Middleware/authorized.js";
 // controller
-const contactController = require("../Controller/contact-controller");
+import {
+  createNewContact,
+  getContactForm,
+  deleteContactForm,
+} from "../Controller/contact-controller.js";
 
 // route
-router.route("/").post(upload.none(), contactController.createNewContact);
+router.route("/").post(upload.none(), createNewContact);
 
 router.use(protect(), authrized("admin"));
 
-router
-  .route("/:id")
-  .get(contactController.getContactForm)
-  .delete(contactController.deleteContactForm);
-module.exports = router;
+router.route("/:id").get(getContactForm).delete(deleteContactForm);
+export default router;

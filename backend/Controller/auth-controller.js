@@ -1,14 +1,14 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 // model
-const User = require("../Model/user-model");
+import User from "../Model/user-model.js";
 // utils
-const AppErrors = require("../Utils/AppError");
-const CatchAsync = require("../Utils/CatchAsync");
-const FilterBody = require("../Utils/FilterBody");
-const verifyUser = require("../Utils/verifyUser");
+import AppErrors from "../Utils/AppError.js";
+import CatchAsync from "../Utils/CatchAsync.js";
+import FilterBody from "../Utils/FilterBody.js";
+import verifyUser from "../Utils/verifyUser.js";
 
 // controller
-const Factory = require("./handle-factory");
+import { createOne } from "./handle-factory.js";
 // for generation token
 const generateToken = (user) => {
   return jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, {
@@ -32,7 +32,7 @@ const createRefreshToken = (user, res) => {
 
 // Controllers
 // register
-exports.register = Factory.createOne(User, [
+export const register = createOne(User, [
   "first_name",
   "last_name",
   "email",
@@ -41,7 +41,7 @@ exports.register = Factory.createOne(User, [
 ]);
 
 // login
-exports.login = CatchAsync(async (req, res, next) => {
+export const login = CatchAsync(async (req, res, next) => {
   const requiredData = ["query", "password"];
   const filterdata = FilterBody(req.body, next, requiredData);
 
@@ -63,7 +63,7 @@ exports.login = CatchAsync(async (req, res, next) => {
 });
 
 // refresh token
-exports.refreshToken = CatchAsync(async (req, res, next) => {
+export const refreshToken = CatchAsync(async (req, res, next) => {
   const refreshToken = req.cookies.refreshToken;
 
   if (!refreshToken) return next(new AppErrors("No refresh token", 403));

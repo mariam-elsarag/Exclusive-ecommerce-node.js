@@ -53,10 +53,10 @@ class ApiFeature {
       pages: totalPages,
       count: count,
       next: this.page < totalPages ? `${baseUrl}?page=${this.page + 1}` : null,
-      previouse: this.page > 1 ? `${baseUrl}?page=${this.page - 1}` : null,
+      previous: this.page > 1 ? `${baseUrl}?page=${this.page - 1}` : null,
       results: data,
     };
   }
 }
 
-module.exports = ApiFeature;
+export default ApiFeature;

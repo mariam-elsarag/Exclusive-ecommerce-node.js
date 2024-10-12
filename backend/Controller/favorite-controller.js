@@ -1,13 +1,13 @@
 // model
-const Favorite = require("../Model/favorite-model");
+import Favorite from "../Model/favorite-model.js";
 
 //utils
-const AppErrors = require("../Utils/AppError");
-const CatchAsync = require("../Utils/CatchAsync");
-const ApiFeatures = require("../Utils/ApiFeatures");
+
+import CatchAsync from "../Utils/CatchAsync.js";
+import ApiFeatures from "../Utils/ApiFeatures.js";
 
 // get user favorite list
-exports.getUserFavoriteList = CatchAsync(async (req, res, next) => {
+export const getUserFavoriteList = CatchAsync(async (req, res, next) => {
   const features = new ApiFeatures(
     Favorite.find({ user: req.user._id }).populate({
       path: "product",
@@ -32,7 +32,7 @@ exports.getUserFavoriteList = CatchAsync(async (req, res, next) => {
 });
 
 // put favorite
-exports.toggleFavorite = CatchAsync(async (req, res, next) => {
+export const toggleFavorite = CatchAsync(async (req, res, next) => {
   const { productId } = req.params;
 
   const isFavoriteProduct = await Favorite.findOne({

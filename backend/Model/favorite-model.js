@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const favoriteSchema = new mongoose.Schema({
   product: {
@@ -24,4 +24,4 @@ favoriteSchema.set("toJSON", {
 });
 
 const Favorite = mongoose.model("Favorite", favoriteSchema, "Favorite");
-module.exports = Favorite;
+export default Favorite;

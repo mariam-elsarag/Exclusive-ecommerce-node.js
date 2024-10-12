@@ -1,19 +1,30 @@
-const express = require("express");
-const multer = require("multer");
+import express from "express";
+import multer from "multer";
 
 const router = express.Router();
 const upload = multer();
 // middleware
 
-const protect = require("../Middleware/protect");
-const authorized = require("../Middleware/authorized");
+import protect from "../Middleware/protect.js";
+import authorized from "../Middleware/authorized.js";
 // controller
-const discountController = require("../Controller/discount-controller");
+import {
+  createDiscount,
+  getAllDiscounts,
+  deleteDiscountCode,
+  updateDiscount,
+} from "../Controller/discount-controller.js";
 
 router.use(protect(), authorized("admin"));
 // for discount
 router
   .route("/discount")
-  .post(upload.none(), discountController.createDiscount);
+  .post(upload.none(), createDiscount)
+  .get(getAllDiscounts);
 
-module.exports = router;
+router
+  .route("/discount/:id")
+  .delete(deleteDiscountCode)
+  .put(upload.none(), updateDiscount);
+
+export default router;

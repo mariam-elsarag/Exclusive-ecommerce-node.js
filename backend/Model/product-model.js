@@ -1,5 +1,4 @@
-const { Timestamp } = require("mongodb");
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema(
   {
@@ -80,4 +79,4 @@ productSchema.set("toJSON", {
   },
 });
 const Product = mongoose.model("Product", productSchema, "Product");
-module.exports = Product;
+export default Product;

@@ -1,14 +1,14 @@
 // model
-const Category = require("../Model/category-model");
+import Category from "../Model/category-model.js";
 
 // utils
-const AppErrors = require("../Utils/AppError");
-const CatchAsync = require("../Utils/CatchAsync");
-const FilterBody = require("../Utils/FilterBody");
-const cloudinary = require("../Utils/Cloudnary");
+import AppErrors from "../Utils/AppError.js";
+import CatchAsync from "../Utils/CatchAsync.js";
+import FilterBody from "../Utils/FilterBody.js";
+import cloudinary from "../Utils/Cloudnary.js";
 
 // create new category
-exports.createNewCategory = CatchAsync(async (req, res, next) => {
+export const createNewCategory = CatchAsync(async (req, res, next) => {
   const filterData = FilterBody(req.body, next, ["title"]);
   if (!req.file) {
     return next(new AppErrors([{ icon: "Please upload an icon" }], 400));
@@ -31,7 +31,7 @@ exports.createNewCategory = CatchAsync(async (req, res, next) => {
 });
 
 // delete category
-exports.deleteCategory = CatchAsync(async (req, res, next) => {
+export const deleteCategory = CatchAsync(async (req, res, next) => {
   const { id } = req.params;
   const category = await Category.findById(id);
   if (!category) {
@@ -57,7 +57,7 @@ exports.deleteCategory = CatchAsync(async (req, res, next) => {
 });
 
 // get all category
-exports.getAllCategory = CatchAsync(async (req, res, next) => {
+export const getAllCategory = CatchAsync(async (req, res, next) => {
   const category = await Category.find();
   res.status(200).json({ category });
 });

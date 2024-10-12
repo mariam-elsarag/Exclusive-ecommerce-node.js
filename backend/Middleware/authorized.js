@@ -1,4 +1,4 @@
-const AppErrors = require("../Utils/AppError");
+import AppErrors from "../Utils/AppError.js";
 
 const authrized = (...roles) => {
   return (req, res, next) => {
@@ -13,4 +13,4 @@ const authrized = (...roles) => {
     return next();
   };
 };
-module.exports = authrized;
+export default authrized;

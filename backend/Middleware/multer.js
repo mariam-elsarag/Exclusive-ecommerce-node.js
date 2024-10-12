@@ -1,6 +1,6 @@
-const multer = require("multer");
+import multer from "multer";
 // utils
-const AppErrors = require("../Utils/AppError");
+import AppErrors from "../Utils/AppError.js";
 
 const multerStorage = multer.memoryStorage();
 
@@ -16,4 +16,4 @@ const upload = multer({
   storage: multerStorage,
   fileFilter: multerFilter,
 });
-module.exports = upload;
+export default upload;

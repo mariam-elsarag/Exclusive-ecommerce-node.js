@@ -1,18 +1,15 @@
-const express = require("express");
-const multer = require("multer");
+import express from "express";
+import multer from "multer";
 
 const router = express.Router();
 const upload = multer();
 
 // middleware
-const protect = require("../Middleware/protect");
+import protect from "../Middleware/protect.js";
 // controller
-const accountController = require("../Controller/account-controller");
+import { getUser, updaterUser } from "../Controller/account-controller.js";
 
 router.use(protect());
-router
-  .route("/")
-  .get(accountController.getUser)
-  .patch(upload.none(), accountController.updaterUser);
+router.route("/").get(getUser).patch(upload.none(), updaterUser);
 
-module.exports = router;
+export default router;

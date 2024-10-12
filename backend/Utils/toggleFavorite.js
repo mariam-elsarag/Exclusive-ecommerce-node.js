@@ -1,5 +1,5 @@
 // model
-const Favorite = require("../Model/favorite-model");
+import Favorite from "../Model/favorite-model.js";
 
 // function
 const toggleFavorite = async (data, req) => {
@@ -28,4 +28,4 @@ const toggleFavorite = async (data, req) => {
   }
 };
 
-module.exports = toggleFavorite;
+export default toggleFavorite;

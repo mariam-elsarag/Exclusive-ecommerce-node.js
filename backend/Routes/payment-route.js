@@ -11,6 +11,6 @@ const upload = multer();
 
 router.use(protect());
 
-router.route("/").post(upload.none(), checkout);
+router.route("/check-out").post(checkout);
 
 export default router;

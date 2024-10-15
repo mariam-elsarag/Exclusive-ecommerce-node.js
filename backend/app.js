@@ -16,7 +16,7 @@ import categoryRoutes from "./Routes/category-route.js";
 import adminRoutes from "./Routes/admin-route.js";
 import cartRoutes from "./Routes/cart-route.js";
 // payment
-import checkoutRoutes from "./Routes/checkout-route.js";
+import paymentRoutes from "./Routes/payment-route.js";
 
 // for security
 import helmet from "helmet";
@@ -53,7 +53,7 @@ app.use("/api/category", categoryRoutes);
 app.use("/api/cart", cartRoutes);
 console.log("Current Environment:", process.env.NODE_ENV);
 // payment
-app.use("/api/check-out", checkoutRoutes);
+app.use("/api/payment", paymentRoutes);
 
 // for routes errors
 app.all("*", (req, res, next) => {

@@ -14,12 +14,25 @@ const cartSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "User is required"],
     },
-    quantity: {
-      type: Number,
+    varient: {
+      type: {
+        color: {
+          type: String,
+          required: [true, "Color is required"],
+        },
+        quantity: {
+          type: Number,
+          required: [true, "quantity for the color is required"],
+        },
+        size: [
+          {
+            type: String,
+            enum: ["xs", "s", "M", "l", "Xl"],
+          },
+        ],
+      },
     },
-    color: {
-      type: String,
-    },
+
     total_price: {
       type: Number,
     },
@@ -30,6 +43,14 @@ const cartSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+cartSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "products",
+    select:
+      "thumbnail title price is_new ratingQuantity ratingAverage offer_price varient",
+  });
+  next();
+});
 cartSchema.set("toJSON", {
   transform: (doc, ret) => {
     ret.cartId = ret._id;
@@ -39,5 +60,6 @@ cartSchema.set("toJSON", {
     return ret;
   },
 });
+
 const Cart = mongoose.model("Cart", cartSchema, "Cart");
 export default Cart;

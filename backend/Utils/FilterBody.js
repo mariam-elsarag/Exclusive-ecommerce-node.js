@@ -13,6 +13,7 @@ const FilterBody = (
     if (allowedFields.includes(key) || requiredFields.includes(key)) {
       filter[key] = body[key];
     }
+    console.log(key, "mariam");
   });
   if (fieldsRequired) {
     requiredFields.forEach((el) => {

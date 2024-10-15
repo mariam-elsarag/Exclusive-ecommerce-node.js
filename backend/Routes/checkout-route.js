@@ -4,12 +4,13 @@ import multer from "multer";
 // middleware
 import protect from "../Middleware/protect.js";
 // controller
-import { getAllCart, toggleItemToCart } from "../Controller/cart-controller.js";
+import { checkout } from "../Controller/cart-controller.js";
 
 const router = express.Router();
 const upload = multer();
+
 router.use(protect());
 
-router.route("/").get(getAllCart);
-router.route("/:id").put(toggleItemToCart);
+router.route("/").post(upload.none(), checkout);
+
 export default router;

@@ -16,16 +16,14 @@ const cartSchema = new mongoose.Schema(
     },
     quantity: {
       type: Number,
-      required: [true, "quantity is required"],
+    },
+    color: {
+      type: String,
     },
     total_price: {
       type: Number,
     },
-    status: {
-      type: String,
-      default: "in_stoke",
-      enum: ["in_stoke", "out_of_stoke"],
-    },
+
     discount_code: {
       type: String,
     },

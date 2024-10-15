@@ -23,6 +23,11 @@ const productSchema = new mongoose.Schema(
     offer_price: {
       type: Number,
     },
+    offer_percentage: {
+      type: Number,
+      min: [1, "Min percentage of offer is 1%"],
+      max: [100, "Max percentage of offer is 5%"],
+    },
     is_new: {
       type: Boolean,
       default: true,
@@ -38,36 +43,57 @@ const productSchema = new mongoose.Schema(
       max: [5, "Rating must be below 5"],
       set: (val) => Math.round(val * 10) / 10,
     },
-    size: [
-      {
-        type: String,
-        enum: ["xs", "s", "M", "l", "Xl"],
-      },
-    ],
-    is_free_delivery: {
-      type: Boolean,
-      required: [true, "is_free_delivery is required"],
+
+    shipping: {
+      type: Number,
+      required: [true, "shipping is required"],
     },
     category: {
       type: mongoose.Schema.ObjectId,
       ref: "Category",
       required: [true, "Category is required"],
     },
-    colors: [
-      {
-        color: {
-          type: String,
-          required: [true, "Color is required"],
+    varient: {
+      required: [true, "At least one variant is required"],
+      type: [
+        {
+          color: {
+            type: String,
+            required: [true, "Color is required"],
+          },
+          stock: {
+            type: Number,
+            required: [true, "Stock for the color is required"],
+          },
+          size: [
+            {
+              type: String,
+              enum: ["xs", "s", "M", "l", "Xl"],
+            },
+          ],
+          status: {
+            type: String,
+            default: "in_stoke",
+            enum: ["in_stoke", "out_of_stoke"],
+          },
         },
-        stock: {
-          type: Number,
-          required: [true, "Stock for the color is required"],
+      ],
+      validate: {
+        validator: function (v) {
+          return v.length > 0;
         },
+        message: "At least one variant must be provided",
       },
-    ],
+    },
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+productSchema.pre("save", function (next) {
+  if (this.offer_percentage) {
+    this.offer_price = this.price - (this.price * this.offer_percentage) / 100;
+  }
+  next();
+});
 productSchema.set("toJSON", {
   timestamps: true,
   transform: (doc, ret) => {

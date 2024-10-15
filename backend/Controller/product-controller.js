@@ -33,7 +33,7 @@ export const getAllProduct = CatchAsync(async (req, res, next) => {
     .filter()
     .search(["title"])
     .limitFields(
-      "thumbnail title price is_new ratingQuantity ratingAverage productId offer_price"
+      "thumbnail title price is_new ratingQuantity ratingAverage productId offer_price offer_percentage"
     )
     .pagination(8);
 
@@ -54,18 +54,22 @@ export const getProductDetails = CatchAsync(async (req, res, next) => {
 });
 // create new product
 export const createNewProduct = CatchAsync(async (req, res, next) => {
-  const allowFields = [
+  const allowFields = ["offer_percentage"];
+  const requireFields = [
     "title",
     "description",
     "price",
     "category",
-    "offer_price",
-    "is_new",
-    "size",
-    "is_free_delivery",
-    "colors",
+    "shipping",
+    "varient",
   ];
-  const filterData = FilterBody(req.body, next, allowFields, false);
+  const filterData = FilterBody(
+    req.body,
+    next,
+    requireFields,
+    true,
+    allowFields
+  );
   let errors = [];
   if (!req.files.thumbnail || req.files.thumbnail.length === 0) {
     errors.push({ thumbnail: "thumbnail is required" });
@@ -76,6 +80,7 @@ export const createNewProduct = CatchAsync(async (req, res, next) => {
   if (errors.length > 0) {
     return next(new AppErrors(errors, 400));
   }
+
   // upload thumbnail
   const results = await cloudinary.uploader.upload_stream(
     { folder: "/mediafiles/product" },

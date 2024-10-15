@@ -1,15 +1,21 @@
 import AppErrors from "./AppError.js";
 
-const FilterBody = (body, next, allowedFields, fieldsRequired = true) => {
+const FilterBody = (
+  body,
+  next,
+  requiredFields,
+  fieldsRequired = true,
+  allowedFields
+) => {
   let errors = [];
   let filter = {};
   Object.keys(body).forEach((key) => {
-    if (allowedFields.includes(key)) {
+    if (allowedFields.includes(key) || requiredFields.includes(key)) {
       filter[key] = body[key];
     }
   });
   if (fieldsRequired) {
-    allowedFields.forEach((el) => {
+    requiredFields.forEach((el) => {
       if (!filter[el]) {
         errors.push({ [el]: `${el} is required` });
       }

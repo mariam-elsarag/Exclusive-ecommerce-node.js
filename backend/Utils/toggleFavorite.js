@@ -14,9 +14,9 @@ const toggleFavorite = async (data, req) => {
     });
   } else {
     const favoriteProducts = await Favorite.find({ user: req.user._id });
-
     return data.map((item) => {
       const { _id, ...rest } = item._doc;
+
       return {
         ...rest,
         favorite: favoriteProducts.some(

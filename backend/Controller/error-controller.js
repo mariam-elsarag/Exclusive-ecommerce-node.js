@@ -36,12 +36,21 @@ const handleDublicateDbData = (err) => {
   if (err.keyPattern.phone_number) {
     return new AppErrors({ phone_number: "Phone number already exists" }, 400);
   }
+  if (err.keyPattern.discount_code) {
+    return new AppErrors(
+      { discount_code: "Discount code already exists" },
+      400
+    );
+  }
 };
+// type errro
 
 const handleCastError = (err) => {
   let errors = [];
-  if (err.errors.exp_date) {
+  if (err?.errors?.exp_date) {
     errors.push({ exp_date: "Invalid date format" });
+  } else {
+    errors.push({ validation: err.message });
   }
   return new AppErrors(errors, 400);
 };
@@ -66,11 +75,11 @@ const GlobalErrors = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   if (process.env.NODE_ENV === "production") {
     let error = err;
-    console.log(error.name, "name");
+
     if (error.name === "ValidationError") {
       error = handleValidatorError(error);
     }
-    console.log(err.code, "code");
+
     if (error.code === 11000) {
       error = handleDublicateDbData(error);
     }
@@ -80,8 +89,8 @@ const GlobalErrors = (err, req, res, next) => {
     ) {
       error = handleJWTError();
     }
-    if (error.name === "CastError") {
-      error = handleCastError(error);
+    if (err.name === "CastError") {
+      error = handleCastError(err);
     }
     if (error.name === "TokenExpiredError") error = handleExpireJWTError();
 

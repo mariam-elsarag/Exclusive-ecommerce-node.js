@@ -1,11 +1,11 @@
 // model
 import Cart from "../Model/cart-model.js";
-import Discount from "../Model/discount-model.js";
+import Product from "../Model/product-model.js";
 
 // utils
 import AppErrors from "./../Utils/AppError.js";
 import CatchAsync from "../Utils/CatchAsync.js";
-import FilterBody from "../Utils/FilterBody.js";
+
 import toggleFavorite from "../Utils/toggleFavorite.js";
 import ApiFeature from "./../Utils/ApiFeatures.js";
 
@@ -20,7 +20,7 @@ export const toggleItemToCart = CatchAsync(async (req, res, next) => {
   if (!cart) {
     cart = await Cart.create({ user: userId, products: [] });
   }
-  const productExists = cart.products.includes(id);
+  const productExists = cart.products.find((item) => item.id === id);
   if (productExists) {
     if (cart.products.length === 1) {
       await Cart.deleteOne({ user: userId, products: id });
@@ -44,6 +44,12 @@ export const getAllCart = CatchAsync(async (req, res, next) => {
   ).pagination(8);
 
   let cart = await features.getPaginations(Cart, req);
+  if (!cart.results) {
+    return next(new AppErrors("No cart found for this user", 404));
+  }
+  if (!cart.results.products || cart.results.products.length === 0) {
+    return next(new AppErrors("No products found in the cart", 404));
+  }
 
   let favoriteProducts = await toggleFavorite(cart.results.products, req);
 
@@ -53,47 +59,4 @@ export const getAllCart = CatchAsync(async (req, res, next) => {
     cartId: cart.results._id,
   };
   res.status(200).json({ ...cart });
-});
-
-// checkout
-export const checkout = CatchAsync(async (req, res, next) => {
-  const userId = req.user._id;
-  const cart = await Cart.findOne({ user: userId });
-
-  const requiredFields = ["varient", "productId"];
-  const allowFields = ["discount_code"];
-  let errors = [];
-  let filterData = [];
-  console.log(req.body, "k");
-  req.body.forEach((item, index) => {
-    let hasAllRequiredFields = true;
-    const filteredItem = {};
-
-    requiredFields.forEach((field) => {
-      if (!item[field]) {
-        errors.push({ [field]: `${field} is required` });
-        hasAllRequiredFields = false;
-      } else {
-        filteredItem[field] = item[field];
-      }
-    });
-    allowFields.forEach((field) => {
-      if (item[field]) {
-        filteredItem[field] = item[field];
-      }
-    });
-
-    if (hasAllRequiredFields) {
-      filterData.push(filteredItem);
-    }
-  });
-  if (errors.length > 0) {
-    return next(new AppErrors(errors, 400));
-  }
-  // check if there is cart for this users and this cart have products
-  if (!cart || cart.products.length === 0) {
-    return next(new AppErrors("You don't have items in you cart", 404));
-  }
-
-  res.status(200).json(req.body);
 });

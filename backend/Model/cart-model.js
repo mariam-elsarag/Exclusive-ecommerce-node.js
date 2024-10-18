@@ -14,32 +14,6 @@ const cartSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "User is required"],
     },
-    varient: {
-      type: {
-        color: {
-          type: String,
-          required: [true, "Color is required"],
-        },
-        quantity: {
-          type: Number,
-          required: [true, "quantity for the color is required"],
-        },
-        size: [
-          {
-            type: String,
-            enum: ["xs", "s", "M", "l", "Xl"],
-          },
-        ],
-      },
-    },
-
-    total_price: {
-      type: Number,
-    },
-
-    discount_code: {
-      type: String,
-    },
   },
   { timestamps: true }
 );

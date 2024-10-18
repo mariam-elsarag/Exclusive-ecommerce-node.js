@@ -59,6 +59,7 @@ const productSchema = new mongoose.Schema(
         {
           color: {
             type: String,
+            unique: true,
             required: [true, "Color is required"],
           },
           stock: {

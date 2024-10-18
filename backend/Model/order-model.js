@@ -1,31 +1,57 @@
 import mongoose from "mongoose";
 
-orderSchema = new mongoose.Schema(
+const orderSchema = new mongoose.Schema(
   {
-    product: {
-      type: mongoose.Schema.ObjectId,
-      ref: "Product",
-      required: [true, "Product is required"],
-    },
     user: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
       required: [true, "User is required"],
     },
+    products: [
+      {
+        productId: {
+          type: mongoose.Schema.ObjectId,
+          ref: "Product",
+          required: true,
+        },
+        varient: {
+          color: {
+            type: String,
+            required: true,
+          },
+          quantity: {
+            type: Number,
+            required: true,
+          },
+          size: {
+            type: String,
+            enum: ["xs", "s", "M", "l", "Xl"],
+          },
+        },
+      },
+    ],
     status: {
       type: String,
       default: "pending",
       enum: ["pending", "paid", "shipped", "delivered", "cancelled"],
+    },
+    total_price: {
+      type: Number,
+      min: [0, "min price is 0"],
+      required: [true, "total price is required"],
+    },
+    discount_code: {
+      type: mongoose.Schema.ObjectId,
+      ref: "Disoucnt",
     },
   },
   { timestamps: true }
 );
 orderSchema.set("toJSON", {
   transform: (doc, ret) => {
-    ret.orderId = _id;
+    ret.orderId = ret._id;
     delete ret._id;
     delete ret.__v;
-    delete ret.id;
     return ret;
   },
 });

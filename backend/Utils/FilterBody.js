@@ -5,7 +5,7 @@ const FilterBody = (
   next,
   requiredFields,
   fieldsRequired = true,
-  allowedFields
+  allowedFields = []
 ) => {
   let errors = [];
   let filter = {};

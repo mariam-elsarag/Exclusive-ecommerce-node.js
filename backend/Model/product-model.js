@@ -64,6 +64,7 @@ const productSchema = new mongoose.Schema(
           },
           stock: {
             type: Number,
+            min: [1, "Stock must be more than 1"],
             required: [true, "Stock for the color is required"],
           },
           size: [
@@ -89,14 +90,17 @@ const productSchema = new mongoose.Schema(
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
 productSchema.pre("save", function (next) {
   if (this.offer_percentage) {
     this.offer_price = this.price - (this.price * this.offer_percentage) / 100;
   }
   next();
 });
+
 productSchema.set("toJSON", {
   timestamps: true,
+  virtuals: true,
   transform: (doc, ret) => {
     ret.productId = ret._id;
     delete ret._id;

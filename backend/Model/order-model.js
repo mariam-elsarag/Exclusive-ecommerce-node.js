@@ -40,9 +40,8 @@ const orderSchema = new mongoose.Schema(
       min: [0, "min price is 0"],
       required: [true, "total price is required"],
     },
-    discount_code: {
-      type: mongoose.Schema.ObjectId,
-      ref: "Disoucnt",
+    coupon: {
+      type: String,
     },
   },
   { timestamps: true }

@@ -55,6 +55,13 @@ const handleCastError = (err) => {
   return new AppErrors(errors, 400);
 };
 
+// for striep
+const handleStripeError = (err) => {
+  return new AppErrors(
+    err.raw.message,
+    err.raw.code === "resource_missing" ? 404 : 400
+  );
+};
 const sendErrorForDev = (err, res) => {
   res.status(err.statusCode).json({
     message: err.message,
@@ -91,6 +98,9 @@ const GlobalErrors = (err, req, res, next) => {
     }
     if (err.name === "CastError") {
       error = handleCastError(err);
+    }
+    if (error.type === "StripeInvalidRequestError") {
+      error = handleStripeError(error);
     }
     if (error.name === "TokenExpiredError") error = handleExpireJWTError();
 

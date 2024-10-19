@@ -12,19 +12,15 @@ import {
   createDiscount,
   getAllDiscounts,
   deleteDiscountCode,
-  updateDiscount,
-} from "../Controller/discount-controller.js";
+} from "../Controller/coupon-controller.js";
 
 router.use(protect(), authorized("admin"));
 // for discount
 router
-  .route("/discount")
+  .route("/coupon")
   .post(upload.none(), createDiscount)
   .get(getAllDiscounts);
 
-router
-  .route("/discount/:id")
-  .delete(deleteDiscountCode)
-  .put(upload.none(), updateDiscount);
+router.route("/coupon/:id").delete(deleteDiscountCode);
 
 export default router;

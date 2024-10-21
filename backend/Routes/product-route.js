@@ -17,11 +17,17 @@ import {
 
 // route
 import favoriteRoute from "./favorite-route.js";
+import reviewRoute from "./review-route.js";
 
 // for favorite product
 router.use("/:productId/favorite", favoriteRoute);
 router.use("/favorite", favoriteRoute);
 
+// for review route
+router.use("/:productId/review", reviewRoute);
+router.use("/review/", reviewRoute);
+
+// routes for product
 router
   .route("/")
   .post(

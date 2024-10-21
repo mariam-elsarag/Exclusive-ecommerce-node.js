@@ -25,6 +25,9 @@ const handleValidatorError = (err) => {
   if (err.errors.exp_date) {
     errors.push({ exp_date: err.errors.exp_date.message });
   }
+  if (err.errors.rate) {
+    errors.push({ rate: "Rate must be a number between 1 to 5" });
+  }
   return new AppErrors(errors, 400);
 };
 

@@ -1,4 +1,6 @@
-import mongoose from "mongoose";
+import Product from "./product-model.js";
+
+import mongoose, { Aggregate } from "mongoose";
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -25,6 +27,53 @@ const reviewSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+// calc avg rate
+reviewSchema.statics.calcAverageRate = async function (productId) {
+  const stats = await this.aggregate([
+    {
+      $match: { product: productId },
+    },
+    {
+      $group: {
+        _id: "$product",
+        nRating: { $sum: 1 },
+        nAverage: { $avg: "$rate" },
+      },
+    },
+  ]);
+  if (stats.length > 0) {
+    await Product.findByIdAndUpdate(productId, {
+      ratingQuantity: stats[0].nRating,
+      ratingAverage: stats[0].nAverage,
+    });
+  } else {
+    await Product.findByIdAndUpdate(productId, {
+      ratingQuantity: 0,
+      ratingAverage: 0,
+    });
+  }
+};
+
+reviewSchema.pre("save", function (next) {
+  this.populate({
+    path: "user",
+    select: "full_name",
+  });
+  next();
+});
+reviewSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "user",
+    select: "full_name",
+  });
+  next();
+});
+
+reviewSchema.post("save", function (doc, next) {
+  // to work with review model not instense (this.constructor)
+  this.constructor.calcAverageRate(this.product);
+  next();
+});
 
 reviewSchema.set("toJSON", {
   transform: (doc, ret) => {
@@ -32,6 +81,8 @@ reviewSchema.set("toJSON", {
     delete ret._id;
     delete ret.id;
     delete ret.__v;
+    delete ret.createdAt;
+    delete ret.product;
     return ret;
   },
 });

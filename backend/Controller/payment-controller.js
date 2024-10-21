@@ -12,7 +12,7 @@ import CatchAsync from "../Utils/CatchAsync.js";
 // check discount code
 const checkDiscountCodeIsAvailable = async (code) => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-  const coupon = await stripe.coupons.retrieve(code);
+  const coupon = await stripe.coupons.reterieve(code);
   return coupon;
 };
 // check if product is available
@@ -107,7 +107,7 @@ const stripSession = async (products, orderId, email, code) => {
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
-      success_url: `${process.env.FRONT_SERVER}/success-payment/`,
+      success_url: `${process.env.FRONT_SERVER}/success-payment/order=${orderId}`,
       cancel_url: `${process.env.FRONT_SERVER}/cancel-payment`,
       customer_email: email,
       client_reference_id: orderId.toString(),
@@ -253,4 +253,17 @@ export const checkout = CatchAsync(async (req, res, next) => {
   );
   // Return filtered data
   res.status(200).json({ orderId: order._id, session: session });
+});
+
+// success payment
+export const successPayment = CatchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const userId = req.user._id;
+  const order = await Order.findOne({ user: userId, _id: id });
+  if (!order) {
+    return next(new AppErrors("Order not found", 404));
+  }
+  order.status = "paid";
+  await order.save();
+  res.status(200).json({ order: "Successfully pay order" });
 });

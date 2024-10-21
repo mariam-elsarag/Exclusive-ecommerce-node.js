@@ -33,6 +33,7 @@ const handleValidatorError = (err) => {
 
 // Database errors
 const handleDublicateDbData = (err) => {
+  console.log("iam test");
   if (err.keyPattern.email) {
     return new AppErrors({ email: "Email already exists" }, 400);
   }
@@ -83,6 +84,7 @@ const sendErrorForProduction = (err, res) => {
 
 const GlobalErrors = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
+
   if (process.env.NODE_ENV === "production") {
     let error = err;
 

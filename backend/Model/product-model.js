@@ -1,3 +1,7 @@
+import Review from "./review-model.js";
+import Favorite from "./favorite-model.js";
+import Cart from "./cart-model.js";
+import Order from "./order-model.js";
 import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema(
@@ -59,7 +63,7 @@ const productSchema = new mongoose.Schema(
         {
           color: {
             type: String,
-            unique: true,
+
             required: [true, "Color is required"],
           },
           stock: {
@@ -97,7 +101,26 @@ productSchema.pre("save", function (next) {
   }
   next();
 });
+// remove reviews after remove product
+productSchema.post("findOneAndDelete", async function (doc, next) {
+  console.log(doc._id, "doc");
 
+  if (doc) {
+    //  delete all reviews related to this product
+    await Review.deleteMany({ product: doc._id });
+    //  deleteall favorite product
+    await Favorite.deleteMany({ product: doc._id });
+    // delete items in cart related to this product
+    await Cart.deleteMany({ products: doc._id });
+    // delete all order that pending
+    await Order.deleteMany({
+      products: {
+        $elemMatch: { productId: doc._id },
+      },
+      status: "pending",
+    });
+  }
+});
 productSchema.set("toJSON", {
   timestamps: true,
   virtuals: true,

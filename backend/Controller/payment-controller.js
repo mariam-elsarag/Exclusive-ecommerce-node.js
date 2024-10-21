@@ -12,7 +12,7 @@ import CatchAsync from "../Utils/CatchAsync.js";
 // check discount code
 const checkDiscountCodeIsAvailable = async (code) => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-  const coupon = await stripe.coupons.reterieve(code);
+  const coupon = await stripe.coupons.retrieve(code);
   return coupon;
 };
 // check if product is available
@@ -21,7 +21,7 @@ const checkProductIsAvailable = async (products) => {
   let item_price = 0;
   let productDetails = [];
   const productsCheck = await Promise.all(
-    products.map(async (item) => {
+    products.map(async (item, index) => {
       const product = await Product.findOne({
         _id: item.productId,
         varient: {

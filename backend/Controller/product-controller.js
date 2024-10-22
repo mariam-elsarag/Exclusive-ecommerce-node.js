@@ -1,7 +1,7 @@
 import sharp from "sharp";
 // model
 import Product from "../Model/product-model.js";
-import Favorite from "../Model/favorite-model.js";
+import Order from "../Model/order-model.js";
 
 // utils
 import AppErrors from "../Utils/AppError.js";
@@ -46,11 +46,26 @@ export const getAllProduct = CatchAsync(async (req, res, next) => {
 export const getProductDetails = CatchAsync(async (req, res, next) => {
   const { id } = req.params;
   const product = await Product.findById(id).select(
-    "-__v -updatedAt -createdAt -category"
+    "-__v -updatedAt -createdAt "
   );
 
+  if (!product) {
+    return next(new AppErrors("Product not found", 404));
+  }
   const productDetails = await toggleFavorite([product], req);
-  res.status(200).json({ ...productDetails[0] });
+
+  const relatedProducts = await Product.find({
+    category: product.category,
+    _id: { $ne: product._id },
+  })
+    .limit(4)
+    .select(
+      "-images -description -category -__v -updatedAt -createdAt -shipping -varient"
+    );
+
+  res
+    .status(200)
+    .json({ ...productDetails[0], related_products: relatedProducts });
 });
 // create new product
 export const createNewProduct = CatchAsync(async (req, res, next) => {
@@ -187,4 +202,44 @@ export const deleteProductImage = CatchAsync(async (req, res, next) => {
 
   await product.save();
   res.status(200).json({ product });
+});
+
+// best selling products
+export const bestSellingProducts = CatchAsync(async (req, res, next) => {
+  const bestSellingProducts = await Order.aggregate([
+    { $match: { status: "paid" } },
+    { $unwind: "$products" },
+    {
+      $group: {
+        _id: "$products.productId",
+        totalSold: { $sum: "$products.varient.quantity" },
+      },
+    },
+    { $sort: { totalSold: -1 } },
+    { $limit: 4 },
+  ]);
+  const productIds = bestSellingProducts.map(({ _id }) => _id);
+  const products = await Product.find({ _id: { $in: productIds } }).select(
+    "thumbnail  title price offer_percentage ratingQuantity ratingAverage offer_price productId"
+  );
+  res.status(200).json({ products });
+});
+
+// New Arrival
+export const newArrival = CatchAsync(async (req, res, next) => {
+  const products = await Product.aggregate([
+    { $sort: { createdAt: -1 } },
+    {
+      $project: {
+        productId: "$_id",
+        _id: 0,
+        createdAt: 1,
+        thumbnail: 1,
+        title: 1,
+        description: 1,
+      },
+    },
+    { $limit: 4 },
+  ]);
+  res.status(200).json({ products });
 });

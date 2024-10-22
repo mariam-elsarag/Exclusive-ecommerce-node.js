@@ -13,6 +13,8 @@ import {
   deleteProduct,
   getProductDetails,
   deleteProductImage,
+  bestSellingProducts,
+  newArrival,
 } from "../Controller/product-controller.js";
 
 // route
@@ -42,6 +44,8 @@ router
   )
   .get(protect(false), getAllProduct);
 
+router.route("/best-selling").get(bestSellingProducts);
+router.route("/new-arrival").get(newArrival);
 router
   .route("/:id")
   .delete(protect(), authrized("admin"), deleteProduct)

@@ -101,10 +101,8 @@ productSchema.pre("save", function (next) {
   }
   next();
 });
-// remove reviews after remove product
+// cascade after remove product
 productSchema.post("findOneAndDelete", async function (doc, next) {
-  console.log(doc._id, "doc");
-
   if (doc) {
     //  delete all reviews related to this product
     await Review.deleteMany({ product: doc._id });

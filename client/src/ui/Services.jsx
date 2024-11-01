@@ -1,21 +1,25 @@
-import { delivery, customerService, security } from "../assets/image";
+import {
+  CustomerServiceIcon,
+  DeliveryIcon,
+  SecurityIcon,
+} from "../assets/image";
 import BoxWithIcon from "./BoxWithIcon";
 const data = [
   {
     id: 0,
-    image: delivery,
+    image: DeliveryIcon,
     number: "FREE AND FAST DELIVERY",
     text: "Free delivery for all orders over $140",
   },
   {
     id: 1,
-    image: customerService,
+    image: CustomerServiceIcon,
     number: "24/7 CUSTOMER SERVICE",
     text: "Friendly 24/7 customer support",
   },
   {
     id: 2,
-    image: security,
+    image: SecurityIcon,
     number: "MONEY BACK GUARANTEE",
     text: "We reurn money within 30 days",
   },

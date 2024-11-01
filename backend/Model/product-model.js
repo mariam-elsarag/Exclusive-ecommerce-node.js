@@ -32,10 +32,6 @@ const productSchema = new mongoose.Schema(
       min: [1, "Min percentage of offer is 1%"],
       max: [100, "Max percentage of offer is 5%"],
     },
-    is_new: {
-      type: Boolean,
-      default: true,
-    },
     ratingQuantity: {
       type: Number,
       default: 0,
@@ -68,7 +64,7 @@ const productSchema = new mongoose.Schema(
           },
           stock: {
             type: Number,
-            min: [1, "Stock must be more than 1"],
+            min: [0, "Stock must be more than 0"],
             required: [true, "Stock for the color is required"],
           },
           size: [
@@ -94,6 +90,11 @@ const productSchema = new mongoose.Schema(
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+productSchema.virtual("is_new").get(function () {
+  const now = new Date();
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  return this.createdAt >= sevenDaysAgo;
+});
 
 productSchema.pre("save", function (next) {
   if (this.offer_percentage) {

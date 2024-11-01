@@ -1,8 +1,9 @@
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
+import { useApp } from "../Context/AppContext";
 
 const ProtectedRoute = ({ children }) => {
-  const user = useSelector((store) => store.user.user);
+  const { user } = useApp();
   console.log(user);
   if (!user) return <Navigate to="/home" replace />;
   return children;

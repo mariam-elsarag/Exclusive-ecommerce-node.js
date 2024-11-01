@@ -14,8 +14,9 @@ const Checkout = lazy(() => import("./features/checkout/Checkout"));
 const WishList = lazy(() => import("./features/whishlist/Wishlist"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 import SpinnerFullPage from "./ui/SpinnerFullPage";
-import { ToastContainer } from "react-toastify";
+
 import ProtectedRoute from "./ui/ProtectedRoute";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 const queryClient = new QueryClient({

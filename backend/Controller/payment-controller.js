@@ -9,142 +9,18 @@ import AppErrors from "./../Utils/AppError.js";
 import CatchAsync from "../Utils/CatchAsync.js";
 
 // checkout
-// check discount code
-const checkDiscountCodeIsAvailable = async (code) => {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-  const coupon = await stripe.coupons.retrieve(code);
-  return coupon;
-};
-// check if product is available
-const checkProductIsAvailable = async (products) => {
-  let total_price = 0;
-  let item_price = 0;
-  let productDetails = [];
-  const productsCheck = await Promise.all(
-    products.map(async (item, index) => {
-      const product = await Product.findOne({
-        _id: item.productId,
-        varient: {
-          $elemMatch: {
-            color: item.varient.color,
-            stock: { $gte: item.varient.quantity },
-          },
-        },
-      });
-
-      if (!product) {
-        return {
-          product: `Product with ID ${item.productId} and specified variant is not available`,
-        };
-      }
-      if (product.offer_price) {
-        total_price += item.varient.quantity * product.offer_price;
-        item_price = product.offer_price;
-      } else {
-        total_price += item.varient.quantity * product.price;
-        item_price = product.price;
-      }
-
-      // to check if product has this varient
-      const matchedVariant = product.varient.find(
-        (varient) => varient.color === item.varient.color
-      );
-      // to chekc if this varient has size
-      if (
-        matchedVariant &&
-        matchedVariant.size &&
-        matchedVariant.size.length > 0
-      ) {
-        if (!item.varient.size) {
-          return {
-            size: `Size is required for item ${
-              index + 1
-            } as the product variant has sizes`,
-          };
-        } else if (!matchedVariant.size.includes(item.varient.size)) {
-          return {
-            size: `Invalid size for item ${
-              index + 1
-            }. Allowed sizes are: ${matchedVariant.size.join(", ")}`,
-          };
-        }
-      }
-      const variantIndex = product.varient.findIndex(
-        (varient) => varient.color === item.varient.color
-      );
-
-      if (variantIndex !== -1) {
-        product.varient[variantIndex].stock -= item.varient.quantity;
-      }
-      await product.save();
-      productDetails.push({
-        product_price: item_price,
-        quantity: item.varient.quantity,
-        product_name: product.title,
-      });
-    })
-  );
-  return { productsCheck, total_price, productDetails };
-};
-
-// create strip session
-const stripSession = async (products, orderId, email, code) => {
-  try {
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-    const lineItems = products.map((item) => ({
-      price_data: {
-        currency: "USD",
-        product_data: {
-          name: item.product_name,
-        },
-        unit_amount: Math.round(item.product_price * 100),
-      },
-      quantity: +item.quantity,
-    }));
-
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: lineItems,
-      mode: "payment",
-      success_url: `${process.env.FRONT_SERVER}/success-payment/order=${orderId}`,
-      cancel_url: `${process.env.FRONT_SERVER}/cancel-payment`,
-      customer_email: email,
-      client_reference_id: orderId.toString(),
-      discounts: code ? [{ coupon: code }] : undefined,
-    });
-    return { id: session.id, url: session.url };
-  } catch (error) {
-    throw new AppErrors(error, 400);
-  }
-};
-
-export const checkout = CatchAsync(async (req, res, next) => {
-  const userId = req.user._id;
-
-  const cart = await Cart.findOne({ user: userId });
-  if (!cart || cart.products.length === 0) {
-    return next(new AppErrors("You don't have items in your cart", 404));
-  }
-
+// validate
+const validateProducts = (products, cartProductIds) => {
   const requiredFields = ["varient", "productId"];
   const allowFields = ["discount_code"];
   let errors = [];
   let filterData = [];
 
-  if (!req.body.product || !Array.isArray(req.body.product)) {
-    return next(
-      new AppErrors("Product array is required in the request body", 400)
-    );
-  }
-  const cartProductIds = cart.products.map((cartItem) =>
-    cartItem._id.toString()
-  );
-
-  req.body.product.forEach((item, index) => {
+  products.forEach((item, index) => {
     let hasAllRequiredFields = true;
     const filteredItem = {};
 
+    // Check required fields
     requiredFields.forEach((field) => {
       if (!item[field] && field !== "varient") {
         errors.push({ [field]: `${field} is required for item ${index + 1}` });
@@ -154,6 +30,7 @@ export const checkout = CatchAsync(async (req, res, next) => {
       }
     });
 
+    // Validate variant
     if (item.varient) {
       const { color, quantity, size } = item.varient;
 
@@ -205,6 +82,7 @@ export const checkout = CatchAsync(async (req, res, next) => {
       }
     });
 
+    // Check if product is in cart
     if (hasAllRequiredFields) {
       if (!cartProductIds.includes(item.productId)) {
         errors.push({
@@ -215,35 +93,196 @@ export const checkout = CatchAsync(async (req, res, next) => {
       }
     }
   });
+
+  return { errors, filterData };
+};
+// check discount code
+const checkDiscountCodeIsAvailable = async (code) => {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  const coupon = await stripe.coupons.retrieve(code);
+  return coupon;
+};
+// check if product is available
+const checkProductIsAvailable = async (products) => {
+  let total_price = 0;
+  let item_price = 0;
+  let productDetails = [];
+  let errors = [];
+
+  const productsCheck = await Promise.all(
+    products.map(async (item, index) => {
+      const product = await Product.findOne({
+        _id: item.productId,
+        varient: {
+          $elemMatch: {
+            color: item.varient.color,
+            stock: { $gte: item.varient.quantity },
+            status: "in_stoke",
+          },
+        },
+      });
+
+      if (!product) {
+        errors.push({
+          product: `The product with ID ${item.productId} and the specified variant is not available anymore.`,
+        });
+        return;
+      }
+
+      const matchedVariant = product.varient.find(
+        (variant) => variant.color === item.varient.color
+      );
+
+      if (!matchedVariant) {
+        errors.push({
+          variant: `The color "${item.varient.color}" for product "${product.title}" is not available.`,
+        });
+        return;
+      }
+
+      if (matchedVariant.stock < item.varient.quantity) {
+        errors.push({
+          stock: `Insufficient stock for "${product.title}" in color "${item.varient.color}". Only ${matchedVariant.stock} left.`,
+        });
+        return;
+      }
+
+      if (matchedVariant.size && matchedVariant.size.length > 0) {
+        if (!item.varient.size) {
+          errors.push({
+            size: `Size is required for item ${
+              index + 1
+            } because the product "${product.title}" has multiple sizes.`,
+          });
+          return;
+        } else if (!matchedVariant.size.includes(item.varient.size)) {
+          errors.push({
+            size: `Invalid size for product "${
+              product.title
+            }". Available sizes are: ${matchedVariant.size.join(", ")}.`,
+          });
+          return;
+        }
+      }
+
+      // Update product stock
+      const variantIndex = product.varient.findIndex(
+        (variant) => variant.color === item.varient.color
+      );
+
+      if (variantIndex !== -1) {
+        product.varient[variantIndex].stock -= item.varient.quantity;
+        if (product.varient[variantIndex].stock === 0) {
+          product.varient[variantIndex].status = "out_of_stoke";
+        }
+      }
+
+      await product.save();
+
+      // Calculate total price
+      item_price = product.offer_price ? product.offer_price : product.price;
+      total_price += item.varient.quantity * item_price;
+
+      productDetails.push({
+        product_price: item_price,
+        quantity: item.varient.quantity,
+        product_name: product.title,
+      });
+    })
+  );
+
+  if (errors.length > 0) {
+    return { errors };
+  }
+
+  return { productsCheck, total_price, productDetails };
+};
+
+// create strip session
+const stripSession = async (products, orderId, email, code) => {
+  try {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+    const lineItems = products.map((item) => ({
+      price_data: {
+        currency: "USD",
+        product_data: {
+          name: item.product_name,
+        },
+        unit_amount: Math.round(item.product_price * 100),
+      },
+      quantity: +item.quantity,
+    }));
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: lineItems,
+      mode: "payment",
+      success_url: `${process.env.FRONT_SERVER}/success-payment/order=${orderId}`,
+      cancel_url: `${process.env.FRONT_SERVER}/cancel-payment`,
+      customer_email: email,
+      client_reference_id: orderId.toString(),
+      discounts: code ? [{ coupon: code }] : undefined,
+    });
+    return { id: session.id, url: session.url };
+  } catch (error) {
+    throw new AppErrors(error, 400);
+  }
+};
+
+export const checkout = CatchAsync(async (req, res, next) => {
+  const userId = req.user._id;
+
+  const cart = await Cart.findOne({ user: userId });
+  if (!cart || cart.products.length === 0) {
+    return next(new AppErrors("You don't have items in your cart", 404));
+  }
+
+  if (!req.body.product || !Array.isArray(req.body.product)) {
+    return next(
+      new AppErrors("Product array is required in the request body", 400)
+    );
+  }
+  const cartProductIds = cart.products.map((cartItem) =>
+    cartItem._id.toString()
+  );
+
+  // Validate products
+  const { errors, filterData } = validateProducts(
+    req.body.product,
+    cartProductIds
+  );
+
   if (errors.length > 0) {
     return next(new AppErrors(errors, 400));
   }
-  // check if product exist
 
+  // Check if products exist
   let { productsCheck, total_price, productDetails } =
     await checkProductIsAvailable(filterData);
   if (productsCheck.some((error) => error !== undefined)) {
     return next(new AppErrors(productsCheck, 400));
   }
 
-  // check discount code
+  // Check discount code
   let discountCode;
   if (req.body.coupon) {
     discountCode = await checkDiscountCodeIsAvailable(req.body.coupon);
-
     total_price = total_price - (total_price * discountCode.percent_off) / 100;
   }
 
-  // create order
+  // Create order
   let orderData = {
     user: userId,
     products: filterData,
     total_price,
   };
-  // update discount usage
+
+  // Update discount usage
   if (req.body.coupon) {
     orderData.coupon = req.body.coupon;
   }
+
   const order = await Order.create(orderData);
   const session = await stripSession(
     productDetails,
@@ -251,7 +290,12 @@ export const checkout = CatchAsync(async (req, res, next) => {
     req.user.email,
     req.body.coupon
   );
-  // Return filtered data
+  const remainingProducts = cart.products.filter(
+    (cartItem) =>
+      !filterData.some((item) => item.productId === cartItem._id.toString())
+  );
+  await Cart.updateOne({ user: userId }, { products: remainingProducts });
+  // remove this item from cart
   res.status(200).json({ orderId: order._id, session: session });
 });
 

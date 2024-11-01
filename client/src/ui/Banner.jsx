@@ -1,4 +1,5 @@
-import { aboutHero } from "../assets/image";
+import { AboutHero } from "../assets/image";
+
 const Banner = () => {
   return (
     <>
@@ -21,7 +22,7 @@ const Banner = () => {
           </p>
         </div>
         <figure className="order-1 flex justify-end px-5 md:order-2 md:w-1/2 md:px-0 ">
-          <img src={aboutHero} alt="about" className="xl:max-h-[500px] " />
+          <img src={AboutHero} alt="about" className="xl:max-h-[500px] " />
         </figure>
       </div>
     </>

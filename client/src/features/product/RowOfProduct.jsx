@@ -5,21 +5,15 @@ import Button from "../../ui/Button";
 import { useQuery } from "@tanstack/react-query";
 import { getProducts } from "../../services/productApi";
 import Spinner from "../../ui/Spinner";
+import useGetData from "../../hooks/useGetData";
 const ProductContext = createContext();
 const RowOfProduct = ({ status, children }) => {
-  // const { data: product, isLoading } = useQuery({
-  //   queryKey: ["products"],
-  //   queryFn: getProducts,
-  // });
-  // const [data, setData] = useState();
-  // useEffect(() => {
-  //   const filterData = product?.filter((items) => items.status === status);
-  //   setData(filterData);
-  // }, [product, status]);
-  const data = [];
-  const product = [];
+  const { data, loading } = useGetData("/api/product/best-selling");
+  if (data?.products?.length === 0) {
+    return null;
+  }
   return (
-    <ProductContext.Provider value={{ data, isLoading }}>
+    <ProductContext.Provider value={{ data, loading }}>
       <div className="Container my-20 ">{children}</div>
     </ProductContext.Provider>
   );
@@ -29,6 +23,7 @@ function Title({ title, subTitle }) {
 }
 function Data() {
   const { data, isLoading } = useContext(ProductContext);
+
   return (
     <>
       {isLoading ? (
@@ -38,13 +33,15 @@ function Data() {
       ) : (
         <div className="border-b pb-14">
           <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {data?.map((item, index) => (
+            {data?.products?.map((item, index) => (
               <ProductItem key={index} product={item} />
             ))}
           </div>
-          <div className="mt-16 flex items-center justify-center">
-            <Button to="/product">View All Products</Button>
-          </div>
+          {data?.products?.length > 0 && (
+            <div className="mt-16 flex items-center justify-center">
+              <Button to="/product">View All Products</Button>
+            </div>
+          )}
         </div>
       )}
     </>

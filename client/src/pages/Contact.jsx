@@ -1,4 +1,4 @@
-import { iconEmail, iconPhone } from "../assets/image";
+import { EmailIcon, PhoneIcon } from "../assets/image";
 import ContactForm from "../ui/ContactForm";
 import RowOfLinks from "../ui/RowOfLinks";
 
@@ -11,7 +11,7 @@ const Contact = () => {
           <div className="border-b border-black pb-8 ">
             <div className="flex flex-col gap-6">
               <div className="flex items-center gap-4 ">
-                <img src={iconPhone} alt="phone icon" />
+                <img src={PhoneIcon} alt="phone icon" />
                 <strong className="text-base font-medium">Call To Us</strong>
               </div>
               <div>
@@ -27,7 +27,7 @@ const Contact = () => {
           <div className="pt-8">
             <div className="flex flex-col gap-6">
               <div className="flex items-center gap-4 ">
-                <img src={iconEmail} alt="Email icon" />
+                <img src={EmailIcon} alt="Email icon" />
                 <strong className="text-base font-medium">Write To US</strong>
               </div>
               <div>

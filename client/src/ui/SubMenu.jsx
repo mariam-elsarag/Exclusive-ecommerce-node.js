@@ -1,18 +1,18 @@
 import { Link, useNavigate } from "react-router-dom";
 
+import { useApp } from "../Context/AppContext";
 import {
-  UserIconOutline,
-  logoutIcon,
   OrderIcon,
   StarIcon,
+  UserIconOutline,
+  logoutIcon,
 } from "../assets/image";
-import { useDispatch } from "react-redux";
-import { logOut } from "../features/auth/userSlice";
+
 const SubMenu = ({ setOpenSubMenu }) => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { logout } = useApp();
   const handleLogout = () => {
-    dispatch(logOut());
+    logout();
     setOpenSubMenu(false);
     navigate("/home", { replace: true });
   };

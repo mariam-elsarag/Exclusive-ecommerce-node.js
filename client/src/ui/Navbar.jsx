@@ -1,11 +1,13 @@
 import { useSelector } from "react-redux";
 import { Link, NavLink } from "react-router-dom";
 import { CiHeart, BsCart3, HiBars3 } from "../icon";
-import { UserIcon } from "../assets/image";
+
 import { useState } from "react";
 import SubMenu from "./SubMenu";
 import { getCarts } from "../services/cartApi";
 import { useQuery } from "@tanstack/react-query";
+import { useApp } from "../Context/AppContext";
+import { UserIcon } from "../assets/image";
 const menuLink = [
   { id: 0, title: "home", link: "home" },
   { id: 1, title: "About", link: "about" },
@@ -13,8 +15,7 @@ const menuLink = [
 ];
 
 const Navbar = () => {
-  const { token, profile_picture } = useSelector((store) => store.user);
-
+  const { token } = useApp();
   const [openSubMenu, setOpenSubMenu] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const { data: cart, isLoading } = useQuery({

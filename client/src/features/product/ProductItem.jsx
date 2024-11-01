@@ -1,15 +1,15 @@
 import { Link } from "react-router-dom";
 import { CiHeart, AiOutlineEye } from "../../icon";
-import Button from "../../ui/Button";
-import { useSelector } from "react-redux";
+
 import { addToCart } from "../../services/cartApi";
 
 import { v4 as uuidv4 } from "uuid";
+import { useApp } from "../../Context/AppContext";
 const ProductItem = ({ product }) => {
+  console.log(product, "kjkj");
   const { image, title, price, discount, isNew } = product;
   const discountPrice = discount > 0 ? price - (price * discount) / 100 : 0;
-  const user = useSelector((store) => store.user.user);
-
+  const { user } = useApp();
   return (
     <div className="felx flex-col">
       <figure className="group relative ">

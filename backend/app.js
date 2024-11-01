@@ -1,11 +1,14 @@
 import express from "express";
 import cors from "cors";
+import cron from "node-cron";
 
 // Utils
 import AppErrors from "./Utils/AppError.js";
 
 // for global errors
 import GlobalErrors from "./Controller/error-controller.js";
+// for cron
+import { removeUnpaidOrder } from "./Controller/order-controller.js";
 
 // routes
 import authRoutes from "./Routes/auth-route.js";
@@ -62,6 +65,8 @@ app.all("*", (req, res, next) => {
   next(new AppErrors(`Can't find ${req.originalUrl} on this server`, 404));
 });
 
+// cron to remove orders
+cron.schedule("0 0 1 * * 1", removeUnpaidOrder);
 // for global errors
 app.use(GlobalErrors);
 

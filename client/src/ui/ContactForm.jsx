@@ -3,10 +3,11 @@ import ErrorMessage from "./ErrorMessage";
 import Button from "./Button";
 
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
-const ContactForm = () => {
-  const user = useSelector((store) => store.user.user);
 
+import { useApp } from "../Context/AppContext";
+import axiosInstance from "../axiosInstance";
+const ContactForm = () => {
+  const { user } = useApp();
   const {
     register,
     handleSubmit,
@@ -14,44 +15,23 @@ const ContactForm = () => {
     reset,
   } = useForm({
     defaultValues: {
-      userName: user?.userName,
-      email: user?.email,
+      user: user,
+      email: "",
+      phone_number: null,
+      message: "",
     },
   });
   const onSubmit = async (data) => {
     try {
-      // const Collection = collection(db, "contact");
-      // addDoc(Collection, {
-      //   name: data.userName,
-      //   email: data.email,
-      //   message: data.message,
-      //   phoneNumber: data.phoneNumber,
-      // });
-      toast.success("Message has been submitted", {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      const response = await axiosInstance.post("/api/contact", data);
+      if (response.status === 201) {
+        toast.success("Message has been submitted");
+      }
       reset();
     } catch (error) {
-      console.log(error.message);
-      toast.error("Failed to send a message. Please try again later.", {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      console.log(error);
+      toast.error("Failed to send a message. Please try again later.");
     }
-    console.log(data);
   };
   return (
     <form
@@ -64,7 +44,7 @@ const ContactForm = () => {
             type="text"
             placeholder="Your name"
             className="w-full bg-[#F5F5F5] px-2 py-3 outline-none placeholder:text-black/50  "
-            {...register("userName", {
+            {...register("user", {
               required: "Your name is required",
               minLength: {
                 value: 4,
@@ -96,7 +76,7 @@ const ContactForm = () => {
             type="text"
             className="w-full bg-[#F5F5F5] px-2 py-3 outline-none placeholder:text-black/50 "
             placeholder="Your phone"
-            {...register("phoneNumber", {
+            {...register("phone_number", {
               required: "Phone number is required",
               pattern: {
                 value: /^(011|010|012)\d{8}$/,
@@ -104,8 +84,8 @@ const ContactForm = () => {
               },
             })}
           />
-          {errors.phoneNumber && (
-            <ErrorMessage message={errors.phoneNumber.message} />
+          {errors.phone_number && (
+            <ErrorMessage message={errors.phone_number.message} />
           )}
         </div>
       </div>

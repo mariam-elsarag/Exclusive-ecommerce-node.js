@@ -1,4 +1,4 @@
-import { headPhone } from "../assets/image";
+import { HeadPhone } from "../assets/image";
 import Button from "./Button";
 
 const Banner1 = () => {
@@ -33,7 +33,7 @@ const Banner1 = () => {
           </div>
         </div>
         <figure className=" hidden w-1/2 md:flex">
-          <img src={headPhone} alt="head phone" />
+          <img src={HeadPhone} alt="head phone" />
         </figure>
       </div>
     </div>

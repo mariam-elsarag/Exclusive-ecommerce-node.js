@@ -4,15 +4,16 @@ import Button from "../../ui/Button";
 
 import { Link, useNavigate } from "react-router-dom";
 
-import { signIn } from "./userSlice";
 import { useDispatch } from "react-redux";
 import { googleIcon } from "../../assets/image";
 import { toast } from "react-toastify";
 import ErrorMessage from "../../ui/ErrorMessage";
 import axiosInstance from "../../axiosInstance";
+import { useApp } from "../../Context/AppContext";
+import Cookies from "js-cookie";
 const SignIn = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { login } = useApp();
   const {
     register,
     handleSubmit,
@@ -22,12 +23,7 @@ const SignIn = () => {
     try {
       const response = await axiosInstance.post("/api/auth/login", data);
       if (response.status === 200) {
-        dispatch(
-          signIn({
-            user: response.data.user.full_name,
-            token: response.data.token,
-          }),
-        );
+        login(response.data.token, response.data.user.full_name);
         toast.success("Login successful!");
         navigate("/home");
       }

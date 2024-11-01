@@ -9,10 +9,7 @@ const Home = () => {
   return (
     <div>
       <Hero />
-      {/* <RowOfProduct status="Flash Sales">
-        <RowOfProduct.Title subTitle="Today’s" title="Flash Sales" />
-        <RowOfProduct.Data />
-      </RowOfProduct>
+
       <Category />
       <RowOfProduct status="Best Selers">
         <RowOfProduct.Title
@@ -30,7 +27,7 @@ const Home = () => {
         <RowOfProduct.Data />
       </RowOfProduct>
       <NewArrive />
-      <Services /> */}
+      <Services />
     </div>
   );
 };

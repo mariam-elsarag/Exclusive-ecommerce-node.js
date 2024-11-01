@@ -1,9 +1,9 @@
-import { team1, team2, team3 } from "../assets/image";
+import { Team1, Team2, Team3 } from "../assets/image";
 import { CiTwitter, CiInstagram, RiLinkedinLine } from "../icon";
 const team = [
-  { id: 0, image: team1, name: "Tom Cruise", title: "Founder & Chairman" },
-  { id: 1, image: team2, name: "Emma Watson", title: "Managing Director" },
-  { id: 2, image: team3, name: "Will Smith", title: "Product Designer" },
+  { id: 0, image: Team1, name: "Tom Cruise", title: "Founder & Chairman" },
+  { id: 1, image: Team2, name: "Emma Watson", title: "Managing Director" },
+  { id: 2, image: Team3, name: "Will Smith", title: "Product Designer" },
 ];
 const Taem = () => {
   return (

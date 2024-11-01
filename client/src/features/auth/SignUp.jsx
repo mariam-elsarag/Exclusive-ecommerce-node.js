@@ -5,8 +5,6 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { googleIcon } from "../../assets/image";
 
-import { signIn } from "./userSlice";
-import { useDispatch } from "react-redux";
 import ErrorMessage from "../../ui/ErrorMessage";
 import { toast } from "react-toastify";
 import axiosInstance from "../../axiosInstance";

@@ -39,7 +39,18 @@ export const toggleItemToCart = CatchAsync(async (req, res, next) => {
 export const getAllCart = CatchAsync(async (req, res, next) => {
   const id = req.user._id;
   const features = new ApiFeature(
-    Cart.findOne({ user: id }),
+    Cart.findOne({
+      user: id,
+      products: {
+        $elemMatch: {
+          varient: {
+            $elemMatch: {
+              status: "in_stoke",
+            },
+          },
+        },
+      },
+    }),
     req.query
   ).pagination(8);
 

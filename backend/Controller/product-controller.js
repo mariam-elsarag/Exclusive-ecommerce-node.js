@@ -29,7 +29,10 @@ export const resizeProductImages = CatchAsync(async (req, res, next) => {
 
 // Get all products
 export const getAllProduct = CatchAsync(async (req, res, next) => {
-  const features = new ApiFeature(Product.find(), req.query)
+  const features = new ApiFeature(
+    Product.find({ "varient.status": { $ne: "out_of_stoke" } }),
+    req.query
+  )
     .filter()
     .search(["title"])
     .limitFields(
@@ -219,8 +222,11 @@ export const bestSellingProducts = CatchAsync(async (req, res, next) => {
     { $limit: 4 },
   ]);
   const productIds = bestSellingProducts.map(({ _id }) => _id);
-  const products = await Product.find({ _id: { $in: productIds } }).select(
-    "thumbnail  title price offer_percentage ratingQuantity ratingAverage offer_price productId"
+  const products = await Product.find({
+    _id: { $in: productIds },
+    varient: { status: "in_stock" },
+  }).select(
+    "thumbnail  title price offer_percentage ratingQuantity ratingAverage offer_price productId varient"
   );
   res.status(200).json({ products });
 });

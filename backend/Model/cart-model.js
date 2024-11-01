@@ -23,8 +23,10 @@ cartSchema.pre(/^find/, function (next) {
     select:
       "thumbnail title price is_new ratingQuantity ratingAverage offer_price varient",
   });
+
   next();
 });
+
 cartSchema.set("toJSON", {
   transform: (doc, ret) => {
     ret.cartId = ret._id;

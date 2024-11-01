@@ -9,6 +9,7 @@ import authrized from "../Middleware/authorized.js";
 // controller
 import {
   getAllCategory,
+  getAllCategoryPaginated,
   deleteCategory,
   createNewCategory,
 } from "../Controller/category-controller.js";
@@ -22,6 +23,7 @@ router
     upload.single("icon"),
     createNewCategory
   );
+router.route("/all").get(getAllCategoryPaginated);
 
 router.use(protect(), authrized("admin"));
 router.route("/:id").delete(deleteCategory);

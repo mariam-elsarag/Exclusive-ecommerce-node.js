@@ -6,9 +6,7 @@ import {
   FaInstagram,
   FaLinkedinIn,
 } from "react-icons/fa";
-import QrCode from "../assets/Qr Code.png";
-import GooglePlay from "../assets/GooglePlay.png";
-import AppStore from "../assets/AppStore.png";
+import { BsGooglePlay, BsQrCode, AppStore } from "../assets/image";
 
 const footerLink = [
   { id: 0, name: "My Account", link: "account" },
@@ -22,7 +20,7 @@ const Footer = () => {
     <footer className="bg-black text-White">
       <div className="Container flex flex-col flex-wrap justify-between gap-14 pb-6 pt-20 sm:flex-row xl:gap-16">
         <div>
-          <h5 className="font-header mb-6 text-2xl font-bold  ">Exclusive</h5>
+          <h5 className="mb-6 font-header text-2xl font-bold  ">Exclusive</h5>
           <div>
             <p className="mb-6 text-xl font-medium">Subscribe</p>
             <p className="text-base font-normal">
@@ -41,7 +39,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="w-full sm:w-[175px]">
-          <h5 className="font-header mb-6 text-2xl font-bold ">Support</h5>
+          <h5 className="mb-6 font-header text-2xl font-bold ">Support</h5>
           <div className="flex flex-col gap-4">
             <p className="text-base">
               111 Bijoy sarani, Dhaka, DH 1515, Bangladesh.
@@ -51,7 +49,7 @@ const Footer = () => {
           </div>
         </div>
         <div>
-          <h5 className="font-header mb-6 text-2xl font-bold ">Account</h5>
+          <h5 className="mb-6 font-header text-2xl font-bold ">Account</h5>
           <ul className="flex flex-col gap-4">
             {footerLink.map((link) => (
               <li key={link.id} className="text-base capitalize">
@@ -61,7 +59,7 @@ const Footer = () => {
           </ul>
         </div>
         <div>
-          <h5 className="font-header mb-6 text-2xl font-bold ">Quick Link</h5>
+          <h5 className="mb-6 font-header text-2xl font-bold ">Quick Link</h5>
           <ul className="flex flex-col gap-4">
             <li className="text-base capitalize">Privacy Policy</li>
             <li className="text-base capitalize">Terms Of Use</li>
@@ -70,17 +68,17 @@ const Footer = () => {
           </ul>
         </div>
         <div>
-          <h5 className="font-header mb-6 text-2xl font-bold ">Download App</h5>
+          <h5 className="mb-6 font-header text-2xl font-bold ">Download App</h5>
           <div>
             <p className="mb-2 text-xs text-White/70">
               Save $3 with App New User Only
             </p>
             <figure className="mb-6 flex gap-2">
               <figure>
-                <img src={QrCode} alt="qr code" />
+                <img src={BsQrCode} alt="qr code" />
               </figure>
               <figure className="flex flex-col gap-1">
-                <img src={GooglePlay} alt="google play" />
+                <img src={BsGooglePlay} alt="google play" />
                 <img src={AppStore} alt="app store" />
               </figure>
             </figure>

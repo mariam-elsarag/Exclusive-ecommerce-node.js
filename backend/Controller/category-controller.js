@@ -6,6 +6,7 @@ import AppErrors from "../Utils/AppError.js";
 import CatchAsync from "../Utils/CatchAsync.js";
 import FilterBody from "../Utils/FilterBody.js";
 import cloudinary from "../Utils/Cloudnary.js";
+import ApiFeatures from "../Utils/ApiFeatures.js";
 
 // create new category
 export const createNewCategory = CatchAsync(async (req, res, next) => {
@@ -60,4 +61,12 @@ export const deleteCategory = CatchAsync(async (req, res, next) => {
 export const getAllCategory = CatchAsync(async (req, res, next) => {
   const category = await Category.find();
   res.status(200).json({ category });
+});
+
+// get all category paginated
+export const getAllCategoryPaginated = CatchAsync(async (req, res, next) => {
+  const feature = new ApiFeatures(Category.find(), req.query).pagination(6);
+  const category = await feature.getPaginations(Category, req);
+
+  res.status(200).json({ ...category });
 });

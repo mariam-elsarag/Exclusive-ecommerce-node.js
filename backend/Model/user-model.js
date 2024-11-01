@@ -50,6 +50,7 @@ const userScema = new mongoose.Schema(
     },
     passwordChangedAt: Date,
     otp: String,
+    otpExpire: Date,
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

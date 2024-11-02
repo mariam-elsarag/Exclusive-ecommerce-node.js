@@ -4,8 +4,6 @@ import Button from "../../ui/Button";
 
 import { Link, useNavigate } from "react-router-dom";
 
-import { useDispatch } from "react-redux";
-import { googleIcon } from "../../assets/image";
 import { toast } from "react-toastify";
 import ErrorMessage from "../../ui/ErrorMessage";
 import axiosInstance from "../../axiosInstance";

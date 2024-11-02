@@ -4,9 +4,11 @@ import Footer from "../ui/Footer";
 
 const AppLayout = () => {
   return (
-    <div>
-      <Navbar />
-      <Outlet />
+    <div className="flex min-h-screen flex-col justify-between">
+      <div>
+        <Navbar />
+        <Outlet />
+      </div>
       <Footer />
     </div>
   );

@@ -7,14 +7,14 @@ import { getProducts } from "../../services/productApi";
 import Spinner from "../../ui/Spinner";
 import useGetData from "../../hooks/useGetData";
 const ProductContext = createContext();
-const RowOfProduct = ({ status, children }) => {
-  const { data, loading } = useGetData("/api/product/best-selling");
+const RowOfProduct = ({ status, children, endpoint, containerClassName }) => {
+  const { data, loading } = useGetData(endpoint);
   if (data?.products?.length === 0) {
     return null;
   }
   return (
     <ProductContext.Provider value={{ data, loading }}>
-      <div className="Container my-20 ">{children}</div>
+      <div className={`Container my-20 ${containerClassName}`}>{children}</div>
     </ProductContext.Provider>
   );
 };
@@ -33,9 +33,11 @@ function Data() {
       ) : (
         <div className="border-b pb-14">
           <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {data?.products?.map((item, index) => (
-              <ProductItem key={index} product={item} />
-            ))}
+            {data?.products
+              ? data?.products
+              : data?.results?.map((item, index) => (
+                  <ProductItem key={index} product={item} />
+                ))}
           </div>
           {data?.products?.length > 0 && (
             <div className="mt-16 flex items-center justify-center">

@@ -117,7 +117,7 @@ const checkProductIsAvailable = async (products) => {
           $elemMatch: {
             color: item.varient.color,
             stock: { $gte: item.varient.quantity },
-            status: "in_stoke",
+            status: "in_stock",
           },
         },
       });
@@ -173,7 +173,7 @@ const checkProductIsAvailable = async (products) => {
       if (variantIndex !== -1) {
         product.varient[variantIndex].stock -= item.varient.quantity;
         if (product.varient[variantIndex].stock === 0) {
-          product.varient[variantIndex].status = "out_of_stoke";
+          product.varient[variantIndex].status = "out_of_stock";
         }
       }
 

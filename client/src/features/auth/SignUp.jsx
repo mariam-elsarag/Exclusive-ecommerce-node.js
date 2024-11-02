@@ -3,8 +3,6 @@ import Register from "./Register";
 import Button from "../../ui/Button";
 import { Link, useNavigate } from "react-router-dom";
 
-import { googleIcon } from "../../assets/image";
-
 import ErrorMessage from "../../ui/ErrorMessage";
 import { toast } from "react-toastify";
 import axiosInstance from "../../axiosInstance";

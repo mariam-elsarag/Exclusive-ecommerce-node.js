@@ -6,9 +6,6 @@ import Product from "../Model/product-model.js";
 import AppErrors from "./../Utils/AppError.js";
 import CatchAsync from "../Utils/CatchAsync.js";
 
-import toggleFavorite from "../Utils/toggleFavorite.js";
-import ApiFeature from "./../Utils/ApiFeatures.js";
-
 // toggle item to cart
 export const toggleItemToCart = CatchAsync(async (req, res, next) => {
   const { id } = req.params; //product id
@@ -20,7 +17,17 @@ export const toggleItemToCart = CatchAsync(async (req, res, next) => {
   if (!cart) {
     cart = await Cart.create({ user: userId, products: [] });
   }
+  // check if product out of stock or not
+  const productInStock = await Product.findOne({
+    _id: id,
+    varient: { $elemMatch: { status: "in_stock" } },
+  });
+  console.log(productInStock, "kjkj");
+  if (!productInStock) {
+    return next(new AppErrors({ product: "Product is unavailable" }, 404));
+  }
   const productExists = cart.products.find((item) => item.id === id);
+
   if (productExists) {
     if (cart.products.length === 1) {
       await Cart.deleteOne({ user: userId, products: id });
@@ -38,36 +45,36 @@ export const toggleItemToCart = CatchAsync(async (req, res, next) => {
 // get cart list
 export const getAllCart = CatchAsync(async (req, res, next) => {
   const id = req.user._id;
-  const features = new ApiFeature(
-    Cart.findOne({
-      user: id,
-      products: {
-        $elemMatch: {
-          varient: {
-            $elemMatch: {
-              status: "in_stoke",
-            },
-          },
-        },
-      },
-    }),
-    req.query
-  ).pagination(8);
 
-  let cart = await features.getPaginations(Cart, req);
-  if (!cart.results) {
-    return next(new AppErrors("No cart found for this user", 404));
+  const carts = await Cart.findOne({ user: id });
+
+  if (!carts) {
+    return res.status(200).json({
+      products: [],
+    });
   }
-  if (!cart.results.products || cart.results.products.length === 0) {
-    return next(new AppErrors("No products found in the cart", 404));
+  if (!carts.products || carts.products.length === 0) {
+    return res.status(200).json({
+      products: [],
+    });
   }
 
-  let favoriteProducts = await toggleFavorite(cart.results.products, req);
+  const inStockProducts = carts.products
+    .map((product) => ({
+      ...product.toObject(),
+      varient: product.varient.filter(
+        (variant) => variant.status === "in_stock"
+      ),
+    }))
+    .filter((product) => product.varient.length > 0);
 
-  cart.results = {
-    products: favoriteProducts,
-    user: cart.results.user,
-    cartId: cart.results._id,
-  };
-  res.status(200).json({ ...cart });
+  if (inStockProducts.length === 0) {
+    return next(new AppErrors("No in-stock products found in the cart", 404));
+  }
+
+  res.status(200).json({
+    products: inStockProducts,
+    user: carts.user,
+    cartId: carts._id,
+  });
 });

@@ -30,7 +30,7 @@ export const resizeProductImages = CatchAsync(async (req, res, next) => {
 // Get all products
 export const getAllProduct = CatchAsync(async (req, res, next) => {
   const features = new ApiFeature(
-    Product.find({ "varient.status": { $ne: "out_of_stoke" } }),
+    Product.find({ varient: { $elemMatch: { status: "in_stock" } } }),
     req.query
   )
     .filter()

@@ -34,6 +34,6 @@ export { default as AppStore } from "./images/AppStore.png";
 export { default as BsGooglePlay } from "./images/GooglePlay.png";
 
 // register
-export { default as Register } from "./images/register.png";
+export { default as RegisterImg } from "./images/register.png";
 export { default as Shape } from "./images/Rectangle.png";
 export { default as HeadPhone } from "./images/headphone.png";

@@ -11,7 +11,7 @@ const Home = () => {
       <Hero />
 
       <Category />
-      <RowOfProduct status="Best Selers">
+      <RowOfProduct status="Best Selers" endpoint="/api/product/best-selling">
         <RowOfProduct.Title
           title="Best Selling Products"
           subTitle="This Month"
@@ -19,7 +19,7 @@ const Home = () => {
         <RowOfProduct.Data />
       </RowOfProduct>
       <Banner1 />
-      <RowOfProduct status="Our Products">
+      <RowOfProduct status="Our Products" endpoint="/api/product/">
         <RowOfProduct.Title
           title="Explore Our Products"
           subTitle="Our Products"

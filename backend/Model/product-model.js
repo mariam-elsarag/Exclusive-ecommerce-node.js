@@ -75,8 +75,8 @@ const productSchema = new mongoose.Schema(
           ],
           status: {
             type: String,
-            default: "in_stoke",
-            enum: ["in_stoke", "out_of_stoke"],
+            default: "in_stock",
+            enum: ["in_stock", "out_of_stock"],
           },
         },
       ],

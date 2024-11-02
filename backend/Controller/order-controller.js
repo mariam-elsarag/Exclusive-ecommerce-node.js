@@ -39,7 +39,7 @@ export const removeUnpaidOrder = CatchAsync(async (req, res, next) => {
 
         if (variantIndex !== -1) {
           product.varient[variantIndex].stock += item.varient.quantity;
-          product.varient[variantIndex].status = "in_stoke";
+          product.varient[variantIndex].status = "in_stock";
           await product.save();
         }
       }

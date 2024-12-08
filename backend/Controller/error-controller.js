@@ -33,7 +33,6 @@ const handleValidatorError = (err) => {
 
 // Database errors
 const handleDublicateDbData = (err) => {
-  console.log("iam test");
   if (err.keyPattern.email) {
     return new AppErrors({ email: "Email already exists" }, 400);
   }
